@@ -1,0 +1,11 @@
+---
+- hosts: all
+  gather_facts: true
+  become: yes
+  debugger: on_failed
+  vars_files:
+    - ./vars.yml
+    - ./vars/Debian.yml
+    - ./vars/postgresql_11.yml
+  roles:
+    - ../ansible-role-postgresql-ha
