@@ -1,0 +1,4 @@
+[postgres_cluster]
+node01      ansible_host=192.168.56.11
+node02      ansible_host=192.168.56.12
+node03      ansible_host=192.168.56.13
