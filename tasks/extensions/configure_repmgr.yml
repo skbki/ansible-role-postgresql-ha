@@ -52,6 +52,14 @@
   register: ssh_private_key
   when: repmgr_primary
 
+- name: Repmgr | Ensure ssh keys destination folder exists
+  file: 
+    path: "{{repmgr_base_key_path}}"
+    state: directory
+    owner: "{{ postgresql_service_user }}"
+    group: "{{ postgresql_service_group }}"
+    mode: 0600
+
 - name: Repmgr | Update authorized_keys for postgres user
   authorized_key:
     user: postgres
@@ -108,7 +116,7 @@
 
 - name: Repmgr | Wait for Postgres
   wait_for:
-    timeout: 2
+    timeout: 3
   delegate_to: localhost
 
 - name: Repmgr | Register standby
