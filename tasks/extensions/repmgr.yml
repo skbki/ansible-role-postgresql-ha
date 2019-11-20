@@ -1,5 +1,4 @@
-# file: postgresql/tasks/extensions/contrib.yml
-
+---
 - name: PostgreSQL | Extensions | Add 2nd Quadrant repo gpg key | apt
   apt_key:
     url: "{{repmgr_gpg_key_url}}"

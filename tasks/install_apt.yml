@@ -1,5 +1,4 @@
-# file: postgresql/tasks/install_apt.yml
-
+---
 # The standard ca-certs are needed because  without them apt_key will fail to
 # validate www.postgresql.org (or probably any other source).
 - name: PostgreSQL | Make sure the CA certificates are available | apt

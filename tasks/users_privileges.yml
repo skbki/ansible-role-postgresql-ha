@@ -1,5 +1,4 @@
-# file: postgresql/tasks/users_privileges.yml
-
+---
 - name: PostgreSQL | Update the user privileges
   postgresql_user:
     name: "{{item.name}}"

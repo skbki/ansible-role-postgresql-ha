@@ -1,5 +1,4 @@
-# file: postgresql/tasks/users.yml
-
+---
 - name: PostgreSQL | Ensure PostgreSQL is running
   service:
     name: "{{ postgresql_service_name }}"

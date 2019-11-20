@@ -1,3 +1,4 @@
+---
 - name: Repmgr | Update configuration (repmgr.conf)
   template:
     src: "repmgr.conf-{{ repmgr_version }}.j2"

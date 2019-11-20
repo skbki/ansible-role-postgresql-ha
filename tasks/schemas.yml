@@ -1,5 +1,4 @@
-# file: postgresql/tasks/schemas.yml
-
+---
 - name: PostgreSQL | Add Schema to databases
   postgresql_schema:
     database: "{{ item.database }}"
