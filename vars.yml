@@ -21,8 +21,8 @@ postgresql_shared_preload_libraries:
 
 postgresql_pg_hba_custom:
   - { type: "host", database: "all", user: "all", address: "192.168.56.0/24", method: "md5" }
-  - { type: "host", database: "replication", user: "repmgr", address: "192.168.56.0/24", method: "md5" }  
-  - { type: "host", database: "replication", user: "repmgr", address: "127.0.0.1/32", method: "md5" }  
+  - { type: "host", database: "replication", user: "repmgr", address: "192.168.56.0/24", method: "trust" }  
+  - { type: "host", database: "replication", user: "repmgr", address: "127.0.0.1/32", method: "trust" }  
 
 postgresql_databases:
   - name: testdb
@@ -51,7 +51,7 @@ postgresql_user_privileges:
 postgresql_ext_install_repmgr: yes
 repmgr_target_group: "postgres_cluster"
 repmgr_target_group_hosts: "{{ groups[repmgr_target_group] }}"
-repmgr_master: "node01"
+repmgr_master: "pgsql01"
 
 # Required configuration items
 repmgr_user: "repmgr"
