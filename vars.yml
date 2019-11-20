@@ -4,8 +4,8 @@ postgresql_port: 5432
 
 # Basic settings
 postgresql_encoding: "UTF-8"
-postgresql_locale: "en_US.UTF-8"
-postgresql_ctype: "en_US.UTF-8"
+postgresql_locale: "fr_FR.UTF-8"
+postgresql_ctype: "fr_FR.UTF-8"
 postgresql_admin_user: "postgres"
 postgresql_default_auth_method: "peer"
 postgresql_listen_addresses: "*"
@@ -78,10 +78,10 @@ repmgr_location: "default"
 repmgr_use_replication_slots: "no"
 repmgr_witness_sync_interval: 15
 repmgr_use_primary_conninfo_password: "false"
-repmgr_passfile: "/var/lib/postgresql/{{postgresql_version}}/.pgpass"
-repmgr_base_key_path: "/var/lib/postgresql/{{postgresql_version}}/.ssh"
-repmgr_private_key_path: "/var/lib/postgresql/{{postgresql_version}}/.ssh/id_rsa"
-repmgr_public_key_path: "/var/lib/postgresql/{{postgresql_version}}/.ssh/id_rsa.pub"
+repmgr_passfile: "/var/lib/postgresql/.pgpass" # /var/lib/postgresql is postgres' user homedir by default
+repmgr_base_key_path: "/var/lib/postgresql/.ssh"
+repmgr_private_key_path: "/var/lib/postgresql/.ssh/id_rsa"
+repmgr_public_key_path: "/var/lib/postgresql/.ssh/id_rsa.pub"
 repmgr_ssh_key_bits: "2048"
 repmgr_ssh_key_type: "rsa"
 

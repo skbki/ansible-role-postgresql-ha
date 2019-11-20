@@ -1,4 +1,4 @@
 [postgres_cluster]
-node01      ansible_host=192.168.56.11
-node02      ansible_host=192.168.56.12
-node03      ansible_host=192.168.56.13
+pgsql01     ansible_host=192.168.56.11  repmgr_node_id=1
+pgsql02     ansible_host=192.168.56.12  repmgr_node_id=2
+pgsql03     ansible_host=192.168.56.13  repmgr_node_id=3

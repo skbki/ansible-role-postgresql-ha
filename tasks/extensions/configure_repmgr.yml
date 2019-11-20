@@ -33,6 +33,14 @@
     mode: 0400
     trim_blocks: no
 
+- name: Repmgr | Ensure ssh keys destination folder exists
+  file: 
+    path: "{{repmgr_base_key_path}}"
+    state: directory
+    owner: "{{ postgresql_service_user }}"
+    group: "{{ postgresql_service_group }}"
+    mode: 0600
+
 - name: Repmgr | Generate ssh keypair for postgres user
   command: "ssh-keygen -b {{repmgr_ssh_key_bits}} -t {{repmgr_ssh_key_type}} -f {{repmgr_private_key_path}} -N ''"
   args:
@@ -52,14 +60,6 @@
     src: "{{repmgr_private_key_path}}"
   register: ssh_private_key
   when: repmgr_primary
-
-- name: Repmgr | Ensure ssh keys destination folder exists
-  file: 
-    path: "{{repmgr_base_key_path}}"
-    state: directory
-    owner: "{{ postgresql_service_user }}"
-    group: "{{ postgresql_service_group }}"
-    mode: 0600
 
 - name: Repmgr | Update authorized_keys for postgres user
   authorized_key:
