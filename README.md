@@ -193,3 +193,10 @@ Top Contributors:
 #### Feedback, bug-reports, requests, ...
 
 Are [welcome](https://github.com/ANXS/postgresql/issues)!
+
+
+## Install requirements
+
+```bash
+ansible-galaxi install -r requirements.yml -p ~/.roles
+```

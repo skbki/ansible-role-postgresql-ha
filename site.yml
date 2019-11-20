@@ -8,4 +8,4 @@
     - ./vars/Debian.yml
     - ./vars/postgresql_11.yml
   roles:
-    - ../ansible-role-postgresql-ha
+    - ansible-role-postgresql-ha
