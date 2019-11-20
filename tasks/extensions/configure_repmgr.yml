@@ -41,17 +41,26 @@
     group: "{{ postgresql_service_group }}"
     mode: 0600
 
-- name: Repmgr | Generate ssh keypair for postgres user
-  command: "ssh-keygen -b {{repmgr_ssh_key_bits}} -t {{repmgr_ssh_key_type}} -f {{repmgr_private_key_path}} -N ''"
-  args:
-    creates: "{{repmgr_private_key_path}}"
-  become: yes
-  become_user: "{{ postgresql_service_user }}"
+# - name: Repmgr | Generate ssh keypair for postgres user
+#   command: "ssh-keygen -b {{repmgr_ssh_key_bits}} -t {{repmgr_ssh_key_type}} -f {{repmgr_private_key_path}} -N ''"
+#   args:
+#     creates: "{{repmgr_private_key_path}}"
+#   become: yes
+#   become_user: "{{ postgresql_service_user }}"
+#   when: repmgr_primary
+
+- name: Repmgr | Generate ssh keypair for postgres user (Native module version)
+  openssh_keypair:
+    path: "{{repmgr_base_key_path}}/id_rsa"
+    size: 2048
+    owner: "{{ postgresql_service_user }}"
+    group: "{{ postgresql_service_group }}"
+    mode: 0600
   when: repmgr_primary
 
 - name: Repmgr | Slurp ssh public key
   slurp:
-    src: "{{repmgr_public_key_path}}"
+    src: "{{repmgr_private_key_path}}"
   register: ssh_public_key
   when: repmgr_primary
 
