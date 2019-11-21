@@ -1,10 +1,12 @@
 ---
 - name: Repmgr | Detect primary
-  shell: "set -o pipefail ; {{ postgresql_bin_directory }}/repmgr -f {{ postgresql_conf_directory }}/repmgr.conf cluster show | grep primary | cut -d '|' -f 2"
+  shell: "{{ postgresql_bin_directory }}/repmgr -f {{ postgresql_conf_directory }}/repmgr.conf cluster show | grep primary | cut -d '|' -f 2"
   register: repmgr_primary_check
   become: yes
   become_user: postgres
   ignore_errors: True
+
+# - debug: repmgr_primary_check
 
 - name: Repmgr | Declare as primary for existing installation
   set_fact:
