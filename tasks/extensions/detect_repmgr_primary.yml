@@ -6,7 +6,7 @@
   become_user: postgres
   ignore_errors: True
 
-# - debug: repmgr_primary_check
+# - debug: "var=repmgr_primary_check"
 
 - name: Repmgr | Declare as primary for existing installation
   set_fact:
