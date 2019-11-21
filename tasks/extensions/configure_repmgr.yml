@@ -30,7 +30,7 @@
     dest: "{{repmgr_passfile}}"
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
-    mode: 0400
+    mode: 0600
     trim_blocks: no
 
 - name: Repmgr | Ensure ssh keys destination folder exists
@@ -90,8 +90,8 @@
   command: "{{postgresql_bin_directory}}/repmgr -f {{postgresql_conf_directory}}/repmgr.conf cluster show"
   become: yes
   become_user: "{{ postgresql_service_user }}"
-  changed_when: repmgr_cluster_show.rc != 0
   register: repmgr_cluster_show
+  changed_when: repmgr_cluster_show.rc != 0
   ignore_errors: True
 
 - name: Repmgr | Register as primary
