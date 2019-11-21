@@ -23,8 +23,10 @@ postgresql_shared_preload_libraries:
 # pg_hba.conf
 postgresql_pg_hba_custom:
   - { type: "host", database: "all", user: "all", address: "192.168.56.0/24", method: "md5" }
-  - { type: "host", database: "replication", user: "repmgr", address: "192.168.56.0/24", method: "trust" }  
-  - { type: "host", database: "replication", user: "repmgr", address: "127.0.0.1/32", method: "trust" }  
+  - { type: "host", database: "replication", user: "{{repmgr_user}}", address: "192.168.56.0/24", method: "trust" }  
+  - { type: "host", database: "replication", user: "{{repmgr_user}}", address: "127.0.0.1/32", method: "trust" }  
+  - { type: "host", database: "{{repmgr_database}}", user: "{{repmgr_user}}", address: "127.0.0.1/32", method: "trust" }  
+  - { type: "host", database: "{{repmgr_database}}", user: "{{repmgr_user}}", address: "192.168.56.0/24", method: "trust" }  
 
 # Databases
 postgresql_databases:
@@ -81,8 +83,6 @@ repmgr_passfile: "/var/lib/postgresql/.pgpass"
 repmgr_base_key_path: "/var/lib/postgresql/.ssh"
 repmgr_private_key_path: "/var/lib/postgresql/.ssh/id_rsa"
 repmgr_public_key_path: "/var/lib/postgresql/.ssh/id_rsa.pub"
-repmgr_ssh_key_bits: "2048"
-repmgr_ssh_key_type: "rsa"
 
 # Logging
 repmgr_log_level: "INFO"
