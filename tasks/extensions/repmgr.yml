@@ -17,21 +17,4 @@
     update_cache: yes
     cache_valid_time: "{{apt_cache_valid_time | default (3600)}}"
   when: ansible_pkg_mgr == "apt"
-  notify:
-    - restart postgresql
-
-- name: PostgreSQL | Extensions | Add 2nd Quadrant repo for repmgr | yum
-  yum_repository:
-     name: "2ndquadrant-dl-default-release-pg{{postgresql_version}}"
-     description: "2ndQuadrant packages (PG{{postgresql_version}}) for $releasever - $basearch"
-     baseurl: "{{ repmgr_baseurl }}"
-     gpgkey: "{{ repmgr_gpg_key_url }}"
-  when: ansible_pkg_mgr == "yum" or ansible_pkg_mgr == "dnf"
-
-- name: PostgreSQL | Extensions | Make sure the postgres repmgr extensions are installed | yum
-  yum:
-    name: "repmgr{{postgresql_version}}-{{repmgr_version}}"
-    state: present
-  when: ansible_pkg_mgr == "yum"
-  notify:
-    - restart postgresql
+  notify: restart postgresql

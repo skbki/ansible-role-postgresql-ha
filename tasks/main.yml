@@ -18,14 +18,6 @@
   when: ansible_pkg_mgr == "apt"
   tags: [postgresql, postgresql-install]
 
-- import_tasks: install_yum.yml
-  when: ansible_pkg_mgr == "yum" and ( ansible_distribution == "RedHat" or ansible_distribution == "CentOS" or ansible_distribution == "OracleLinux")
-  tags: [postgresql, postgresql-install]
-
-- import_tasks: install_dnf.yml
-  when: ansible_pkg_mgr == "dnf" and ansible_distribution == "Fedora"
-  tags: [postgresql, postgresql-install]
-
 - import_tasks: extensions.yml
   tags: [postgresql, postgresql-extensions]
 

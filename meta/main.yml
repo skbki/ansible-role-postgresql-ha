@@ -1,31 +1,18 @@
-# file: postgresql/meta/main.yml
-
+---
 galaxy_info:
-  author: pjan vandaele
-  company: ANXS
-  description: "Install and configure PostgreSQL, dependencies, extensions, databases and users."
+  author: Frank FIDANZA
+  company: RG
+  description: "Install and configure PostgreSQL cluster managed with repmgr. Add dependencies, extensions, databases and users."
   min_ansible_version: 2.4.0
   license: MIT
 
   platforms:
   - name: Debian
     versions:
-    - jessie
-    - stretch
+    - buster
   - name: Ubuntu
     versions:
-    - xenial
     - bionic
-  - name: EL
-    versions:
-    - 6
-    - 7
-#
-# DISABLED
-#
-#  - name: Fedora
-#    versions:
-#    - 27
 
   galaxy_tags:
   - postgresql
