@@ -86,6 +86,8 @@
     group: "{{ postgresql_service_group }}"
     mode: 0600
 
+# TODO: refacto overall logic here : repmgr_cluster_show
+
 - name: Repmgr | Check cluster status
   command: "{{postgresql_bin_directory}}/repmgr -f {{postgresql_conf_directory}}/repmgr.conf cluster show"
   become: yes
