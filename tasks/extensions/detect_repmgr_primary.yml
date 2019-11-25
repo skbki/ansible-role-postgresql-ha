@@ -7,15 +7,23 @@
   become_user: postgres
   ignore_errors: True
 
-# - debug: "var=repmgr_primary_check"
+# - debug:
+#     var: repmgr_primary_check
 
 - name: Repmgr | Declare as primary for existing installation
   set_fact:
     repmgr_primary: "{{ True if ansible_hostname == repmgr_primary_check.stdout.strip() else False }}"
   register: repmgr_existing_installation_detected
-  when: "repmgr_primary_check.stdout is defined and repmgr_primary_check.rc == 0"
+  when: repmgr_primary_check.stdout is defined and repmgr_primary_check.rc == 0
 
 - name: Repmgr | Declare as primary for new installation
   set_fact:
-    repmgr_primary: "{{ True if ansible_hostname == ansible_play_hosts[0] else False }}"
-  when: "repmgr_existing_installation_detected is skipped"
+    repmgr_primary: "{{ ansible_hostname == repmgr_master }}"
+  when: repmgr_primary_check.stdout == ""
+
+- name: Repmgr | Ensure repmgr_master host exists
+  fail:
+    msg: "{{repmgr_master}} was not found in {{repmgr_target_group}}"
+  when: 
+    - repmgr_primary_check.stdout == "" and
+      repmgr_master is not in repmgr_target_group_hosts
