@@ -13,7 +13,6 @@
 - name: Repmgr | Declare as primary for existing installation
   set_fact:
     repmgr_primary: "{{ True if ansible_hostname == repmgr_primary_check.stdout.strip() else False }}"
-  register: repmgr_existing_installation_detected
   when: repmgr_primary_check.stdout is defined and repmgr_primary_check.rc == 0
 
 - name: Repmgr | Declare as primary for new installation
