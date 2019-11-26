@@ -87,7 +87,7 @@ repmgr_public_key_path: "/var/lib/postgresql/.ssh/id_rsa.pub"
 # Logging
 repmgr_log_level: "INFO"
 repmgr_log_facility: "STDERR"
-repmgr_log_file: ""
+repmgr_log_file: "/var/log/postgresql/repmgrd.log"
 repmgr_log_status_interval: 300
 
 # Notification
@@ -134,7 +134,7 @@ repmgr_primary_notification_timeout: 60
 repmgr_repmgrd_standby_startup_timeout: 60
 
 # Monitoring
-repmgr_monitoring_history: "no"
+repmgr_monitoring_history: "yes"
 repmgr_monitor_interval_secs: 2
 repmgr_degraded_monitoring_timeout: -1
 repmgr_async_query_timeout: 60
