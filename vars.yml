@@ -20,6 +20,13 @@ postgresql_ext_install_repmgr: yes
 postgresql_shared_preload_libraries:
   - repmgr
 
+# postgresql logging 
+postgresql_log_checkpoints: on
+postgresql_log_connections: on
+postgresql_log_disconnections: on
+postgresql_log_temp_files: 0
+
+
 # pg_hba.conf
 postgresql_pg_hba_custom:
   - { type: "host", database: "all", user: "all", address: "192.168.56.0/24", method: "md5" }
@@ -76,7 +83,7 @@ repmgr_config_directory: "{{postgresql_conf_directory}}"
 repmgr_replication_user: "{{repmgr_user}}"
 repmgr_replication_type: "physical"
 repmgr_location: "default"
-repmgr_use_replication_slots: "no"
+repmgr_use_replication_slots: "no" # this or use Barman serve instead
 repmgr_witness_sync_interval: 15
 repmgr_use_primary_conninfo_password: "false"
 repmgr_passfile: "/var/lib/postgresql/.pgpass"
