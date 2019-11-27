@@ -41,50 +41,70 @@
     group: "{{ postgresql_service_group }}"
     mode: 0700
 
-- name: Repmgr | Generate ssh keypair for postgres user (Native module version)
-  openssh_keypair:
-    path: "{{repmgr_private_key_path}}"
-    size: 2048
-    owner: "{{ postgresql_service_user }}"
-    group: "{{ postgresql_service_group }}"
-    mode: 0700
-  when: repmgr_primary
-  become: yes
-  become_user: "{{ postgresql_service_user }}"
+- name: Rempgr | Generate local SSH keypair
+  shell: "ssh-keygen -t rsa -b 2048 -C {{ansible_hostname}}@{{repmgr_target_group}} -f /tmp/id_rsa -N ''"
+  args:
+    creates: /tmp/id_rsa # delete created keypair locally to make this task run again
+  delegate_to: 127.0.0.1
 
-- name: Repmgr | Slurp ssh public key
-  slurp:
-    src: "{{repmgr_private_key_path}}"
-  register: ssh_public_key
-  when: repmgr_primary
-
-- name: Repmgr | Slurp ssh private key
-  slurp:
-    src: "{{repmgr_private_key_path}}"
-  register: ssh_private_key
-  when: repmgr_primary
-
-- name: Repmgr | Update authorized_keys for postgres user
+- name: Repmgr | Update authorized_keys on all nodes
   authorized_key:
-    user: postgres
+    user: "{{ postgresql_service_user }}"
+    key: "{{ lookup('file', '/tmp/id_rsa.pub') }}"
     state: present
-    key: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ vars['ssh_public_key']['content'] | b64decode }}{% endfor %}"
 
-- name: Repmgr | Update public ssh key for postgres user
+- name: Repmgr | Upload private key on all nodes
   copy:
-    content: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ vars['ssh_public_key']['content'] | b64decode }}{% endfor %}"
-    dest: "{{repmgr_public_key_path}}"
-    owner: "{{ postgresql_service_user }}"
-    group: "{{ postgresql_service_group }}"
-    mode: 0644
-
-- name: Repmgr | Update private ssh key for postgres user
-  copy:
-    content: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ vars['ssh_private_key']['content'] | b64decode }}{% endfor %}"
-    dest: "{{repmgr_private_key_path}}"
+    src: "/tmp/id_rsa"
+    dest: "{{ repmgr_private_key_path }}"
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0600
+
+# - name: Repmgr | Generate ssh keypair for postgres user (Native module version)
+#   openssh_keypair:
+#     path: "{{repmgr_private_key_path}}"
+#     size: 2048
+#     owner: "{{ postgresql_service_user }}"
+#     group: "{{ postgresql_service_group }}"
+#     mode: 0700
+#   when: repmgr_primary
+#   become: yes
+#   become_user: "{{ postgresql_service_user }}"
+
+# - name: Repmgr | Slurp ssh public key
+#   slurp:
+#     src: "{{repmgr_private_key_path}}"
+#   register: ssh_public_key
+#   when: repmgr_primary
+
+# - name: Repmgr | Slurp ssh private key
+#   slurp:
+#     src: "{{repmgr_private_key_path}}"
+#   register: ssh_private_key
+#   when: repmgr_primary
+
+# - name: Repmgr | Update authorized_keys for postgres user
+#   authorized_key:
+#     user: postgres
+#     state: present
+#     key: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ vars['ssh_public_key']['content'] | b64decode }}{% endfor %}"
+
+# - name: Repmgr | Update public ssh key for postgres user
+#   copy:
+#     content: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ vars['ssh_public_key']['content'] | b64decode }}{% endfor %}"
+#     dest: "{{repmgr_public_key_path}}"
+#     owner: "{{ postgresql_service_user }}"
+#     group: "{{ postgresql_service_group }}"
+#     mode: 0644
+
+# - name: Repmgr | Update private ssh key for postgres user
+#   copy:
+#     content: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ vars['ssh_private_key']['content'] | b64decode }}{% endfor %}"
+#     dest: "{{repmgr_private_key_path}}"
+#     owner: "{{ postgresql_service_user }}"
+#     group: "{{ postgresql_service_group }}"
+#     mode: 0600
 
 # TODO: refacto overall logic here : repmgr_cluster_show
 
