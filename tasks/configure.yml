@@ -105,7 +105,6 @@
     group: "{{ postgresql_service_group }}"
     mode: 0640
   register: postgresql_configuration_pt2
-  notify: restart postgresql
   changed_when: true
 
 - name: PostgreSQL | Update configuration - pt. 3 (pgtune)
@@ -170,3 +169,9 @@
     name: "{{ postgresql_service_name }}"
     state: reloaded
   when: postgresql_configuration_pt1.changed or postgresql_configuration_pt2.changed or postgresql_configuration_pt3.changed or postgresql_systemd_custom_conf.changed
+
+- name: PostgreSQL | Restart service
+  service:
+    name: "{{ postgresql_service_name }}"
+    state: restarted
+  when: postgresql_configuration_pt2.changed
