@@ -76,40 +76,31 @@
     group: "{{ postgresql_service_group }}"
     mode: 0600
 
-# TODO: refacto overall logic here : repmgr_cluster_show
-
-- name: Repmgr | Check cluster status
-  command: "{{postgresql_bin_directory}}/repmgr -f {{postgresql_conf_directory}}/repmgr.conf cluster show"
-  become: yes
-  become_user: "{{ postgresql_service_user }}"
-  register: repmgr_cluster_show
-  changed_when: repmgr_cluster_show.rc != 0
-  ignore_errors: True
+- name: Determine repmgr primary hostname
+  set_fact:
+    repmgr_primary_hostname: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ host|trim }}{% endfor %}"
 
 - name: Repmgr | Register as primary
-  command: "{{postgresql_bin_directory}}/repmgr -f {{postgresql_conf_directory}}/repmgr.conf primary register"
+  command: "repmgr primary register"
   become: yes
   become_user: "{{ postgresql_service_user }}"
-  when:
-    - repmgr_primary and
-      not ansible_hostname in repmgr_cluster_show.stdout and
-      not "primary" in repmgr_cluster_show.stdout
+  when: repmgr_primary
 
 - name: Repmgr | Ensure postgresql slave is stopped before clone
   service:
     name: "postgresql@{{postgresql_version}}-{{postgresql_cluster_name}}"
     state: stopped
-  when: not repmgr_primary and not ansible_hostname in repmgr_cluster_show.stdout and not "standby" in repmgr_cluster_show.stdout
+  when: not repmgr_primary
 
 - name: Repmgr | Clone standby
-  command: "{{postgresql_bin_directory}}/repmgr -F -h {% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ host }}{% endfor %} -U repmgr -d repmgr -f {{postgresql_conf_directory}}/repmgr.conf standby clone"
+  command: "repmgr -F {{repmgr_primary_hostname}} -U repmgr -d repmgr standby clone"
   become: yes
   become_user: "{{ postgresql_service_user }}"
-  when: not repmgr_primary and not ansible_hostname in  repmgr_cluster_show.stdout and not "standby" in repmgr_cluster_show.stdout
+  when: not repmgr_primary
 
 - name: Repmgr | Ensure postgresql slave is running after clone
   service:
-    name: "postgresql-{{postgresql_version}}"
+    name: "postgresql@{{postgresql_version}}@{{postgresql_cluster_name}}"
     state: started
   when: not repmgr_primary
 
@@ -119,37 +110,26 @@
   delegate_to: localhost
 
 - name: Repmgr | Register standby
-  command: "{{postgresql_bin_directory}}/repmgr -F -h {% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ host }}{% endfor %} -U repmgr -d repmgr -f {{postgresql_conf_directory}}/repmgr.conf standby register"
+  command: "repmgr -F {{repmgr_primary_hostname}} -U repmgr -d repmgr standby register"
   become: yes
   become_user: "{{ postgresql_service_user }}"
-  when: not repmgr_primary and not ansible_hostname in repmgr_cluster_show.stdout and not "standby" in repmgr_cluster_show.stdout
+  when: not repmgr_primary
 
 - name: Repmgr | Verify cluster functionality
-  command: "{{postgresql_bin_directory}}/repmgr -F -h {% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ host }}{% endfor %} -U repmgr -d repmgr -f {{postgresql_conf_directory}}/repmgr.conf cluster crosscheck"
+  command: "repmgr -F {{repmgr_primary_hostname}} -U repmgr -d repmgr cluster crosscheck"
   become: yes
   become_user: "{{ postgresql_service_user }}"
 
 - name: Repmgr | Ensure repmgrd is running
   service:
-    name: "repmgr{{postgresql_version}}"
+    name: "repmgrd"
     state: started
     enabled: yes
   when: repmgr_monitoring_history == "true" or repmgr_failover == "automatic"
-
-- name: Repmgr | Ensure crontab is installed
-  package:
-    name: crontabs
-  when: repmgr_monitoring_history == "true" or repmgr_failover == "automatic"
-
-- name: Repmgr | Ensure crond is running
-  service:
-    name: "crond"
-    state: started
-    enabled: yes
 
 - name: Repmgr | Setup cluster monitoring history cleanup
   copy:
-    content: "{{postgresql_bin_directory}}/repmgr -f {{postgresql_conf_directory}}/repmgr.conf cluster cleanup --keep-history={{repmgr_keep_history_days}}"
+    content: "repmgr cluster cleanup --keep-history={{repmgr_keep_history_days}}"
     dest: "/etc/cron.daily/repmgr_cleanup"
     mode: 0755
   when: repmgr_monitoring_history == "true" or repmgr_failover == "automatic"
