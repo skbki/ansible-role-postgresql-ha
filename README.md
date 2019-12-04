@@ -146,3 +146,9 @@ There's a lot more knobs and bolts to set, which you can find in the [defaults/m
 ```bash
 ansible-galaxi install -r requirements.yml -p ~/.roles
 ```
+
+## After setup : verifying cluster functionality using Ansible ad-hoc command 
+
+```bash
+ansible postgres_cluster -b --become-user postgres -m shell -a "repmgr -f /etc/postgresql/11/main/repmgr.conf cluster show"
+```
