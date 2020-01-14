@@ -53,14 +53,13 @@
     size: 2048
     owner: root
     mode: 0775
-  delegate_to: localhost
+    force: yes
+  delegate_to: 127.0.0.1
 
 - name: Repmgr | Fetch pubkey content
   set_fact:
     pubkey_content: "{{ lookup('file', '/tmp/id_rsa.pub') }}"
   become: yes
-
-- debug: "var=pubkey_content"
 
 - name: Repmgr | Update authorized_keys on all nodes
   authorized_key:
