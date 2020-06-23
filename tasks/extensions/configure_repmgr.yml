@@ -2,27 +2,27 @@
 - name: Repmgr | Update configuration (repmgr.conf)
   template:
     src: "repmgr.conf-{{ repmgr_version }}.j2"
-    dest: "{{postgresql_conf_directory}}/repmgr.conf"
+    dest: "{{ postgresql_conf_directory }}/repmgr.conf"
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0640
 
 - name: Repmgr | Create repmgr.conf symlink for shorter commands # see: https://repmgr.org/docs/4.0/configuration-file.html
   file:
-    src: "{{postgresql_conf_directory}}/repmgr.conf"
+    src: "{{ postgresql_conf_directory }}/repmgr.conf"
     dest: /etc/repmgr.conf 
     state: link
 
 - name: Repmgr | Ensure systemd drop-in directory exists
   file:
-    path: "/etc/systemd/system/repmgr{{postgresql_version}}.service.d/"
+    path: "/etc/systemd/system/repmgr{{ postgresql_version }}.service.d/"
     state: directory
     mode: 0755
 
 - name: Repmgr | Update drop-in
   template:
     src: "repmgr.custom.conf.j2"
-    dest: "/etc/systemd/system/repmgr{{postgresql_version}}.service.d/custom.conf"
+    dest: "/etc/systemd/system/repmgr{{ postgresql_version }}.service.d/custom.conf"
 
 - name: Repmgr | Allow passwordless restarts with postgres user
   template:
@@ -33,7 +33,7 @@
 - name: Repmgr | Update .pgpass for postgres user
   template:
     src: "pgpass.j2"
-    dest: "{{repmgr_passfile}}"
+    dest: "{{ repmgr_passfile }}"
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0600
@@ -41,7 +41,7 @@
 
 - name: Repmgr | Ensure ssh keys destination folder exists
   file: 
-    path: "{{repmgr_base_key_path}}"
+    path: "{{ repmgr_base_key_path }}"
     state: directory
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
@@ -64,7 +64,7 @@
 - name: Repmgr | Update authorized_keys on all nodes
   authorized_key:
     user: "{{ postgresql_service_user }}"
-    key: "{{pubkey_content}}"
+    key: "{{ pubkey_content }}"
     state: present
 
 - name: Repmgr | Upload private key on all nodes
@@ -77,11 +77,12 @@
 
 - name: Determine repmgr primary hostname
   set_fact:
-    repmgr_primary_hostname: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] == True %}{{ host|trim }}{% endfor %}"
+    repmgr_primary_hostname: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] %}{{ host|trim }}{% endfor %}"
 
-# - name: Debug
-#   debug:
-#     var: ansible_hostname != repmgr_primary_hostname
+- name: Debug repmgr primary hostname
+  debug:
+    msg:
+      "repmgr_primary_hostname": "{{ repmgr_primary_hostname == ansible_hostname }}"
 
 - name: Repmgr | Register as primary
   command: "repmgr primary register"
@@ -91,19 +92,19 @@
 
 - name: Repmgr | Ensure postgresql slave is stopped before clone
   service:
-    name: "postgresql@{{postgresql_version}}-{{postgresql_cluster_name}}"
+    name: "postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
     state: stopped
   when: ansible_hostname != repmgr_primary_hostname
 
 - name: Repmgr | Clone standby
-  command: "repmgr -F -h {{repmgr_primary_hostname}} -U repmgr -d repmgr standby clone"
+  command: "repmgr -F -h {{ repmgr_primary_hostname }} -U repmgr -d repmgr standby clone"
   become: yes
   become_user: "{{ postgresql_service_user }}"
   when: ansible_hostname != repmgr_primary_hostname
 
 - name: Repmgr | Ensure postgresql slave is running after clone
   service:
-    name: "postgresql@{{postgresql_version}}-{{postgresql_cluster_name}}"
+    name: "postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
     state: started
   when: ansible_hostname != repmgr_primary_hostname
 
@@ -113,13 +114,13 @@
   delegate_to: localhost
 
 - name: Repmgr | Register standby
-  command: "repmgr -F -h {{repmgr_primary_hostname}} -U repmgr -d repmgr standby register"
+  command: "repmgr -F -h {{ repmgr_primary_hostname }} -U repmgr -d repmgr standby register"
   become: yes
   become_user: "{{ postgresql_service_user }}"
   when: ansible_hostname != repmgr_primary_hostname
 
 - name: Repmgr | Verify cluster functionality
-  command: "repmgr -F -h {{repmgr_primary_hostname}} -U repmgr -d repmgr cluster crosscheck"
+  command: "repmgr -F -h {{ repmgr_primary_hostname }} -U repmgr -d repmgr cluster crosscheck"
   become: yes
   become_user: "{{ postgresql_service_user }}"
 
@@ -132,7 +133,7 @@
 
 - name: Repmgr | Setup cluster monitoring history cleanup with cron task
   copy:
-    content: "repmgr cluster cleanup --keep-history={{repmgr_keep_history_days}}"
+    content: "repmgr cluster cleanup --keep-history={{ repmgr_keep_history_days }}"
     dest: "/etc/cron.daily/repmgr_cleanup"
     mode: 0755
   when: repmgr_monitoring_history == "true" or repmgr_failover == "automatic"

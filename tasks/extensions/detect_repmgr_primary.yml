@@ -1,18 +1,14 @@
 ---
-# TODO: refacto overall logic here
 - name: Repmgr | Detect primary
   shell: "{{ postgresql_bin_directory }}/repmgr -f {{ postgresql_conf_directory }}/repmgr.conf cluster show | grep primary | cut -d '|' -f 2"
   register: repmgr_primary_check
   become: yes
   become_user: postgres
-  ignore_errors: True
-
-# - debug:
-#     var: repmgr_primary_check
+  ignore_errors: yes
 
 - name: Repmgr | Declare as primary for existing installation
   set_fact:
-    repmgr_primary: "{{ True if ansible_hostname == repmgr_primary_check.stdout.strip() else False }}"
+    repmgr_primary: "{{ ansible_hostname == repmgr_primary_check.stdout.strip() | bool }}"
   when: repmgr_primary_check.stdout is defined and repmgr_primary_check.rc == 0
 
 - name: Repmgr | Declare as primary for new installation
@@ -22,7 +18,7 @@
 
 - name: Repmgr | Ensure repmgr_master host exists
   fail:
-    msg: "{{repmgr_master}} was not found in {{repmgr_target_group}}"
+    msg: "{{ repmgr_master }} was not found in {{ repmgr_target_group }}"
   when: 
     - repmgr_primary_check.stdout == "" and
       repmgr_master is not in repmgr_target_group_hosts

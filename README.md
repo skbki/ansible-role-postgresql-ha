@@ -150,5 +150,5 @@ ansible-galaxi install -r requirements.yml -p ~/.roles
 ## After setup : verifying cluster functionality using Ansible ad-hoc command 
 
 ```bash
-ansible postgres_cluster -b --become-user postgres -m shell -a "repmgr -f /etc/postgresql/11/main/repmgr.conf cluster show"
+ansible pgcluster -b --become-user postgres -m shell -a "repmgr -f /etc/postgresql/11/main/repmgr.conf cluster show"
 ```

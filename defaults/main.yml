@@ -1,20 +1,19 @@
-# file: postgresql/defaults/main.yml
-
+---
 # Basic settings
 postgresql_version: 12
 postgresql_version_terse: "{{ postgresql_version | replace('.', '') }}"  # Short version of the postgresql_version, used in some path and filenames
-postgresql_encoding: "UTF-8"
+postgresql_encoding: UTF-8
 postgresql_data_checksums: false
 postgresql_pwfile: ""
-repmgr_primary: True # Default to True to work without repmgr
+repmgr_primary: true # Default to true to work without repmgr
 
 postgresql_locale_parts:
-  - "en_US" # Locale
-  - "UTF-8" # Encoding
+  - en_US # Locale
+  - UTF-8 # Encoding
 postgresql_locale: "{{ postgresql_locale_parts | join('.') }}"
 postgresql_ctype_parts:
-  - "en_US" # Locale
-  - "UTF-8" # Encoding
+  - en_US # Locale
+  - UTF-8 # Encoding
 postgresql_ctype: "{{ postgresql_ctype_parts | join('.') }}"
 
 postgresql_env:

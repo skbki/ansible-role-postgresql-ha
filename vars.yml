@@ -58,8 +58,8 @@ postgresql_user_privileges:
   - name: admin
     db: testdb
     role_attr_flags: "SUPERUSER"
-  - name: "{{repmgr_user}}"
-    db: "{{repmgr_database}}"
+  - name: "{{ repmgr_user }}"
+    db: "{{ repmgr_database }}"
     priv: "ALL"
     role_attr_flags: "SUPERUSER,REPLICATION"
 
@@ -69,20 +69,20 @@ repmgr_gpg_key_url: "https://dl.2ndquadrant.com/gpg-key.asc"
 repmgr_apt_repository: "deb [arch=amd64] https://dl.2ndquadrant.com/default/release/apt {{ ansible_distribution_release }}-2ndquadrant main"
 
 # Required configuration items
-repmgr_target_group: "postgres_cluster"
+repmgr_target_group: "pgcluster"
 repmgr_target_group_hosts: "{{ groups[repmgr_target_group] }}"
 repmgr_user: "repmgr"
 repmgr_password: "repmgr"
 repmgr_database: "repmgr"
-repmgr_conninfo: "host={{ansible_hostname}} user={{repmgr_user}} dbname={{repmgr_database}} connect_timeout=2"
-repmgr_data_directory: "{{postgresql_data_directory}}"
+repmgr_conninfo: "host={{ ansible_hostname }} user={{ repmgr_user }} dbname={{ repmgr_database }} connect_timeout=2"
+repmgr_data_directory: "{{ postgresql_data_directory }}"
 repmgr_version: "4.2"
 repmgr_master: "pgsql01"
 
 # Replication
-repmgr_primary: False
-repmgr_config_directory: "{{postgresql_conf_directory}}"
-repmgr_replication_user: "{{repmgr_user}}"
+repmgr_primary: false
+repmgr_config_directory: "{{ postgresql_conf_directory }}"
+repmgr_replication_user: "{{ repmgr_user }}"
 repmgr_replication_type: "physical"
 repmgr_location: "default"
 repmgr_use_replication_slots: "no" # this or use Barman serve instead
@@ -104,8 +104,8 @@ repmgr_event_notification_command: ""
 repmgr_event_notifications: ""
 
 # Directories
-repmgr_pg_bindir: "{{postgresql_bin_directory}}"
-repmgr_repmgr_bindir: "{{postgresql_bin_directory}}"
+repmgr_pg_bindir: "{{ postgresql_bin_directory }}"
+repmgr_repmgr_bindir: "{{ postgresql_bin_directory }}"
 
 # Commands & options
 repmgr_pg_ctl_options: ""
@@ -150,10 +150,10 @@ repmgr_async_query_timeout: 60
 repmgr_keep_history_days: 14
 
 # Service commands
-repmgr_service_start_command: "sudo pg_ctlcluster {{postgresql_version}} {{postgresql_cluster_name}} start"
-repmgr_service_stop_command: "sudo pg_ctlcluster {{postgresql_version}} {{postgresql_cluster_name}} stop"
-repmgr_service_restart_command: "sudo pg_ctlcluster {{postgresql_version}} {{postgresql_cluster_name}} restart"
-repmgr_service_reload_command: "sudo pg_ctlcluster {{postgresql_version}} {{postgresql_cluster_name}} reload"
+repmgr_service_start_command: "sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} start"
+repmgr_service_stop_command: "sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} stop"
+repmgr_service_restart_command: "sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} restart"
+repmgr_service_reload_command: "sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} reload"
 repmgr_service_promote_command: ""
 
 # Warning levels

@@ -6,4 +6,4 @@
     enabled: yes
 
 - name: restart cluster
-  shell: pg_ctlcluster {{postgresql_version}} {{postgresql_cluster_name}} restart
+  shell: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} restart
