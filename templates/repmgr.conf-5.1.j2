@@ -157,6 +157,7 @@ use_primary_conninfo_password={{repmgr_use_primary_conninfo_password}}	# explici
 					# "primary_conninfo" parameter using the value contained
 					# in the environment variable PGPASSWORD
 passfile='{{ repmgr_passfile }}'	# path to .pgpass file to include in "primary_conninfo"
+
 #------------------------------------------------------------------------------
 # external command options
 #------------------------------------------------------------------------------
@@ -242,6 +243,9 @@ standby_reconnect_timeout={{repmgr_standby_reconnect_timeout}}		# The max length
 					# for the demoted standby to reconnect to the promoted
 					# primary (note: this value should be equal to or greater
 					# than that set for "node_rejoin_timeout")
+#wal_receive_check_timeout=30		# The max length of time (in seconds) to wait for the walreceiver
+					# on the standby to flush WAL to disk before comparing location
+					# with the shut-down primary
 
 #------------------------------------------------------------------------------
 # "node rejoin" settings
@@ -270,11 +274,6 @@ node_rejoin_timeout={{repmgr_node_rejoin_timeout}}			# The maximum length of tim
 # These settings are only applied when repmgrd is running. Values shown
 # are defaults.
 
-{{ '' if repmgr_repmgrd_pid_file else '#' }}repmgrd_pid_file={{repmgr_repmgrd_pid_file}}			# Path of PID file to use for repmgrd; if not set, a PID file will
-					# be generated in a temporary directory specified by the environment
-					# variable $TMPDIR, or if not set, in "/tmp". This value can be overridden
-					# by the command line option "-p/--pid-file"; the command line option
-					# "--no-pid-file" will force PID file creation to be skipped.
 failover={{repmgr_failover}}			# one of 'automatic', 'manual'.
 					# determines what action to take in the event of upstream failure
 					#
@@ -287,7 +286,10 @@ failover={{repmgr_failover}}			# one of 'automatic', 'manual'.
 priority={{repmgr_priority}}			# indicate a preferred priority for promoting nodes;
 					# a value of zero prevents the node being promoted to primary
 					# (default: 100)
-
+#connection_check_type=ping		# How to check availability of the upstream node; valid options:
+					#  'ping': use PQping() to check if the node is accepting connections
+					#  'connection': execute a throwaway query on the current connection
+					#  'query': execute an SQL statement on the node via the existing connection
 reconnect_attempts={{repmgr_reconnect_attempts}}		# Number of attempts which will be made to reconnect to an unreachable
 					# primary (or other upstream node)
 reconnect_interval={{repmgr_reconnect_interval}}		# Interval between attempts to reconnect to an unreachable
@@ -315,6 +317,36 @@ degraded_monitoring_timeout={{repmgr_degraded_monitoring_timeout}}		# Interval (
 					# disables the timeout completely.
 async_query_timeout={{repmgr_async_query_timeout}}		# Interval (in seconds) which repmgrd will wait before
 					# cancelling an asynchronous query.
+{{ '' if repmgr_repmgrd_pid_file else '#' }}repmgrd_pid_file={{repmgr_repmgrd_pid_file}}			# Path of PID file to use for repmgrd; if not set, a PID file will
+					# be generated in a temporary directory specified by the environment
+					# variable $TMPDIR, or if not set, in "/tmp". This value can be overridden
+					# by the command line option "-p/--pid-file"; the command line option
+					# "--no-pid-file" will force PID file creation to be skipped.
+#standby_disconnect_on_failover=false	# If "true", in a failover situation wait for all standbys to
+					# disconnect their WAL receivers before electing a new primary
+					# (PostgreSQL 9.5 and later only; repmgr user must be a superuser for this)
+#sibling_nodes_disconnect_timeout=30	# If "standby_disconnect_on_failover" is true, the maximum length of time
+					#  (in seconds) to wait for other standbys to confirm they have disconnected their
+					# WAL receivers
+#primary_visibility_consensus=false	# If "true", only continue with failover if no standbys have seen
+					# the primary node recently. *Must* be the same on all nodes.
+#failover_validation_command=''		# Script to execute for an external mechanism to validate the failover
+					# decision made by repmgrd. One or both of the following parameter placeholders
+					# should be provided, which will be replaced by repmgrd with the appropriate
+					# value: %n (node_id), %a (node_name). *Must* be the same on all nodes.
+#election_rerun_interval=15		# if "failover_validation_command" is set, and the command returns
+					# an error, pause the specified amount of seconds before rerunning the election.
+					#
+					# The following items are relevant for repmgrd running on the primary,
+					# and will be ignored on non-primary nodes
+#child_nodes_check_interval=5		# Interval (in seconds) to check for attached child nodes (standbys)
+#child_nodes_connected_min_count=-1	# Minimum number of child nodes which must remain connected, otherwise
+					# disconnection command will be triggered
+#child_nodes_disconnect_min_count=-1	# Minimum number of disconnected child nodes required to execute disconnection command
+					# (ignored if "child_nodes_connected_min_count" set)
+#child_nodes_disconnect_timeout=30	# Interval between child node disconnection and disconnection command execution
+#child_nodes_disconnect_command=''	# Command to execute if child node disconnection detected
+
 
 #------------------------------------------------------------------------------
 # service control commands
@@ -346,11 +378,11 @@ async_query_timeout={{repmgr_async_query_timeout}}		# Interval (in seconds) whic
 #
 # For more details, see: https://repmgr.org/docs/4.1/configuration-service-commands.html
 
-service_start_command ='{{repmgr_service_start_command }}'
-service_stop_command ='{{repmgr_service_stop_command }}'
-service_restart_command ='{{repmgr_service_restart_command }}'
-service_reload_command ='{{repmgr_service_reload_command }}'
-{{ '' if repmgr_service_promote_command  else '#' }}service_promote_command ='{{repmgr_service_promote_command }}'		# This parameter is intended for systems which provide a
+service_start_command ='{{ repmgr_service_start_command }}'
+service_stop_command ='{{ repmgr_service_stop_command }}'
+service_restart_command ='{{ repmgr_service_restart_command }}'
+service_reload_command ='{{ repmgr_service_reload_command }}'
+{{ '' if repmgr_service_promote_command else '#' }}service_promote_command ='{{ repmgr_service_promote_command }}' # This parameter is intended for systems which provide a
 					# package-level promote command, such as Debian's
 					# "pg_ctlcluster". *IMPORTANT*: it is *not* a substitute
 					# for "promote_command"; do not use "repmgr standby promote"
@@ -381,14 +413,3 @@ replication_lag_critical={{repmgr_replication_lag_critical}}		#
 					# Note that these values will be checked when executing
 					# "repmgr standby switchover" to warn about potential
 					# issues with shutting down the demotion candidate.
-
-
-#------------------------------------------------------------------------------
-# BDR monitoring options
-#------------------------------------------------------------------------------
-
-bdr_local_monitoring_only={{repmgr_bdr_local_monitoring_only}}		# Only monitor the local node; no checks will be
-					# performed on the other node
-bdr_recovery_timeout={{repmgr_bdr_recovery_timeout}}			# If a BDR node was offline and has become available
-					# maximum length of time in seconds to wait for the
-					# node to reconnect to the cluster
