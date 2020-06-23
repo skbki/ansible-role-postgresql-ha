@@ -76,7 +76,6 @@ repmgr_password: "repmgr"
 repmgr_database: "repmgr"
 repmgr_conninfo: "host={{ ansible_hostname }} user={{ repmgr_user }} dbname={{ repmgr_database }} connect_timeout=2"
 repmgr_data_directory: "{{ postgresql_data_directory }}"
-repmgr_version: "4.2"
 repmgr_master: "pgsql01"
 
 # Replication
