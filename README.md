@@ -20,6 +20,13 @@ pgsql01     ansible_host=192.168.56.10  repmgr_node_id=1
 pgsql02     ansible_host=192.168.56.11  repmgr_node_id=2
 pgsql03     ansible_host=192.168.56.12  repmgr_node_id=3
 ```
+#### Role variables
+
+Role default variables are split amongst two files :
+  - [001-postgresql.yml](./defaults/main/001-postgresql.yml)
+  - [002-repmgr.yml](./defaults/main/002-repmgr.yml)
+
+In order to exactly figure out the purpose and valid values for each of these variables, do not hesitate to inspect all the Jinja templates in the [templates](./templates) directory. Original default configuration files are also included.
 
 #### Example Playbook
 
@@ -98,10 +105,6 @@ pgsql03     ansible_host=192.168.56.12  repmgr_node_id=3
 #### Testing
 
 TODO
-
-Role default variables are split amongst two files :
-  - [001-postgresql.yml](./defaults/main/001-postgresql.yml)
-  - [002-repmgr.yml](./defaults/main/002-repmgr.yml)
 
 ## Verifying cluster functionality using Ansible ad-hoc command 
 
