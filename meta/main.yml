@@ -2,29 +2,29 @@
 galaxy_info:
   author: Frank FIDANZA
   company: RG
-  description: "Install and configure PostgreSQL cluster managed with repmgr. Add dependencies, extensions, databases and users."
-  min_ansible_version: 2.4.0
+  description: Install and configure PostgreSQL cluster managed with repmgr. Add dependencies, extensions, databases and users.
+  min_ansible_version: 2.8
   license: MIT
 
   platforms:
-  - name: Debian
-    versions:
-    - buster
-  - name: Ubuntu
-    versions:
-    - bionic
+    - name: Debian
+      versions:
+        - buster
+    - name: Ubuntu
+      versions:
+        - bionic
 
   galaxy_tags:
-  - postgresql
-  - postgres
-  - database
-  - database:sql
-  - sql
-  - postgis
-  - debian
-  - ubuntu
-  - centos
-  - redhat
-  - fedora
+    - postgresql
+    - postgres
+    - cluster
+    - repmgr
+    - pgpool
+    - database
+    - rdbms
+    - sql
+    - postgis
+    - debian
+    - ubuntu
 
 dependencies: []
