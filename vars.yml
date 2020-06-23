@@ -31,18 +31,18 @@ postgresql_log_temp_files: 0
 # pg_hba.conf
 postgresql_pg_hba_custom:
   - { type: "host", database: "all", user: "all", address: "192.168.56.0/24", method: "md5" }
-  - { type: "host", database: "replication", user: "{{repmgr_user}}", address: "192.168.56.0/24", method: "trust" }  
-  - { type: "host", database: "replication", user: "{{repmgr_user}}", address: "127.0.0.1/32", method: "trust" }  
-  - { type: "host", database: "{{repmgr_database}}", user: "{{repmgr_user}}", address: "127.0.0.1/32", method: "trust" }  
-  - { type: "host", database: "{{repmgr_database}}", user: "{{repmgr_user}}", address: "192.168.56.0/32", method: "trust" }  
+  - { type: "host", database: "replication", user: "{{ repmgr_user }}", address: "192.168.56.0/24", method: "trust" }  
+  - { type: "host", database: "replication", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
+  - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
+  - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "192.168.56.0/32", method: "trust" }  
 
 # Databases
 postgresql_databases:
   - name: testdb
     owner: admin
     encoding: "UTF-8"
-  - name: "{{repmgr_database}}"
-    owner: "{{repmgr_user}}"
+  - name: "{{ repmgr_database }}"
+    owner: "{{ repmgr_user }}"
     encoding: "UTF-8"
 
 # Users
@@ -50,7 +50,7 @@ postgresql_users:
   - name: admin
     pass: secret # postgresql >=10 does not accept unencrypted passwords
     encrypted: yes
-  - name: "{{repmgr_user}}"
+  - name: "{{ repmgr_user }}"
     pass: "{{repmgr_password}}"
 
 # Roles
@@ -63,19 +63,9 @@ postgresql_user_privileges:
     priv: "ALL"
     role_attr_flags: "SUPERUSER,REPLICATION"
 
-# Manage replication with repmgr (optional)
-# Repositories
-repmgr_gpg_key_url: "https://dl.2ndquadrant.com/gpg-key.asc"
-repmgr_apt_repository: "deb [arch=amd64] https://dl.2ndquadrant.com/default/release/apt {{ ansible_distribution_release }}-2ndquadrant main"
-
 # Required configuration items
 repmgr_target_group: "pgcluster"
 repmgr_target_group_hosts: "{{ groups[repmgr_target_group] }}"
-repmgr_user: "repmgr"
-repmgr_password: "repmgr"
-repmgr_database: "repmgr"
-repmgr_conninfo: "host={{ ansible_hostname }} user={{ repmgr_user }} dbname={{ repmgr_database }} connect_timeout=2"
-repmgr_data_directory: "{{ postgresql_data_directory }}"
 repmgr_master: "pgsql01"
 
 # Replication
@@ -91,12 +81,6 @@ repmgr_passfile: "/var/lib/postgresql/.pgpass"
 repmgr_base_key_path: "/var/lib/postgresql/.ssh"
 repmgr_private_key_path: "/var/lib/postgresql/.ssh/id_rsa"
 repmgr_public_key_path: "/var/lib/postgresql/.ssh/id_rsa.pub"
-
-# Logging
-repmgr_log_level: "INFO"
-repmgr_log_facility: "STDERR"
-repmgr_log_file: "/var/log/postgresql/repmgrd.log"
-repmgr_log_status_interval: 300
 
 # Notification
 repmgr_event_notification_command: ""

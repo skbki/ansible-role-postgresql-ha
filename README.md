@@ -124,17 +124,17 @@ postgresql_shared_preload_libraries:
   - repmgr
 
 postgresql_users:
-  - name: "{{repmgr_user}}"
+  - name: "{{ repmgr_user }}"
     pass: "password"
 
 postgresql_databases:
-  - name: {{repmgr_database}}
-    owner: "{{repmgr_user}}"
+  - name: {{ repmgr_database }}
+    owner: "{{ repmgr_user }}"
     encoding: "UTF-8"
 
 postgresql_user_privileges:
-  - name: "{{repmgr_user}}"
-    db: {{repmgr_database}}
+  - name: "{{ repmgr_user }}"
+    db: {{ repmgr_database }}
     priv: "ALL"
     role_attr_flags: "SUPERUSER,REPLICATION"
 ```
