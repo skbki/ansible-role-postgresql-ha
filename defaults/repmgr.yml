@@ -99,7 +99,3 @@ repmgr_archive_ready_warning: 16
 repmgr_archive_ready_critical: 128
 repmgr_replication_lag_warning: 300
 repmgr_replication_lag_critical: 600
-
-# Bi-Directional Replication
-repmgr_bdr_local_monitoring_only: "false"
-repmgr_bdr_recovery_timeout: 30

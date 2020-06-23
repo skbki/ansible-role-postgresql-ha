@@ -1,54 +1,34 @@
-## ANXS - PostgreSQL [![Build Status](https://travis-ci.org/ANXS/postgresql.svg?branch=master)](https://travis-ci.org/ANXS/postgresql)
+## PostgreSQL HA
 
----
-Help Wanted! If you are able and willing to help maintain this Ansible role then please open a GitHub issue. A lot of people seem to use this role and we (quite obviously) need assistance!
-💖
----
+Install and configure PostgreSQL cluster managed with repmgr. Add dependencies, extensions, databases and users.
 
-Ansible role which installs and configures PostgreSQL, extensions, databases and users.
+#### Requirements
 
+Ansible >=2.9
 
 #### Installation
 
-This has been tested on Ansible 2.4.0 and higher.
-
-To install:
-
-```
-ansible-galaxy install ANXS.postgresql
+```bash
+ansible-galaxy install fidanf.postgresql-ha
 ```
 
 #### Example Playbook
 
-Including an example of how to use your role:
+```yaml
+---
+- hosts: pgcluster
+  gather_facts: yes
+  become: yes
+  roles:
+    - fidanf.postgresql-ha
 
-    - hosts: postgresql-server
-      become: yes
-      roles:
-         - { role: anxs.postgresql }
+```
 
-#### Compatibility matrix
+#### Testing
 
-| Distribution / PostgreSQL | <= 9.3 | 9.4 | 9.5 | 9.6 | 10 | 11 | 12 |
-| ------------------------- |:---:|:---:|:---:|:---:|:--:|:--:|:--:|
-| Ubuntu 14.04 | :no_entry: | :no_entry:| :no_entry:| :no_entry:| :no_entry:| :no_entry:| :no_entry:|
-| Ubuntu 16.04 | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
-| Debian 8.x | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
-| Debian 9.x | :no_entry: | :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:| :white_check_mark:|
+TODO
 
-- :white_check_mark: - tested, works fine
-- :warning: - Not for production use
-- :grey_question: - will work in the future (help out if you can)
-- :interrobang: - maybe works, not tested
-- :no_entry: - Has reached End of Life (EOL)
-
-
-#### Replication with repmgr
-
-There is initial support for setting up and running with replication managed by [repmgr](https://repmgr.org/). In it's current state it has only been tested with repmgr-4.2 on Centos 7 and requires Systemd.
-
-
-#### Variables
+#### Example variables
 
 ```yaml
 # Basic settings
@@ -109,10 +89,10 @@ postgresql_user_privileges:
     role_attr_flags: "CREATEDB" # role attribute flags
 
 # Manage replication with repmgr (optional)
-repmgr_target_group: "postgresql-db"
+repmgr_target_group: pgcluster # ansible group name of the cluster
+repmgr_master: pgsql01 # ansible hostname of the master node
+
 postgresql_ext_install_repmgr: yes
-repmgr_user: repmgr
-repmgr_database: repmgr
 postgresql_wal_level: "replica"
 postgresql_max_wal_senders: 10
 postgresql_max_replication_slots: 10
@@ -124,31 +104,34 @@ postgresql_shared_preload_libraries:
   - repmgr
 
 postgresql_users:
-  - name: "{{repmgr_user}}"
+  - name: "{{ repmgr_user }}"
     pass: "password"
 
 postgresql_databases:
-  - name: {{repmgr_database}}
-    owner: "{{repmgr_user}}"
+  - name: "{{ repmgr_database }}"
+    owner: "{{ repmgr_user }}"
     encoding: "UTF-8"
 
 postgresql_user_privileges:
-  - name: "{{repmgr_user}}"
-    db: {{repmgr_database}}
+  - name: "{{ repmgr_user }}"
+    db: "{{ repmgr_database }}"
     priv: "ALL"
     role_attr_flags: "SUPERUSER,REPLICATION"
+
 ```
 
-There's a lot more knobs and bolts to set, which you can find in the [defaults/main.yml](./defaults/main.yml)
+Every other configuration parameter can be found in default variables :
+  - [defaults/main.yml](./defaults/main.yml)
+  - [defaults/repmgr.yml](./defaults/main.yml)
 
-## Install requirements
+## Verifying cluster functionality using Ansible ad-hoc command 
 
 ```bash
-ansible-galaxi install -r requirements.yml -p ~/.roles
+ansible pgcluster -b --become-user postgres -m shell -a "repmgr cluster show"
+ansible pgcluster -b --become-user postgres -m shell -a "repmgr cluster crosscheck"
 ```
 
-## After setup : verifying cluster functionality using Ansible ad-hoc command 
+License
+-------
 
-```bash
-ansible pgcluster -b --become-user postgres -m shell -a "repmgr -f /etc/postgresql/11/main/repmgr.conf cluster show"
-```
+MIT / BSD
