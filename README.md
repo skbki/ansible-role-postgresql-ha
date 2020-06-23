@@ -12,6 +12,15 @@ Ansible >=2.9
 ansible-galaxy install fidanf.postgresql-ha
 ```
 
+#### Example Inventory
+
+```ini
+[pgcluster]
+pgsql01     ansible_host=192.168.56.10  repmgr_node_id=1
+pgsql02     ansible_host=192.168.56.11  repmgr_node_id=2
+pgsql03     ansible_host=192.168.56.12  repmgr_node_id=3
+```
+
 #### Example Playbook
 
 ```yaml
@@ -20,7 +29,69 @@ ansible-galaxy install fidanf.postgresql-ha
   gather_facts: yes
   become: yes
   roles:
-    - fidanf.postgresql-ha
+    - name: fidanf.postgresql-ha
+      vars:
+        # Required configuration items
+        repmgr_target_group: "pgcluster"
+        repmgr_target_group_hosts: "{{ groups[repmgr_target_group] }}"
+        repmgr_master: "pgsql01"
+        # Basic settings
+        postgresql_version: 11
+        postgresql_cluster_name: main
+        postgresql_cluster_reset: false # TODO: Needs to be tested for repmgr
+        postgresql_port: 5432
+        postgresql_encoding: "UTF-8"
+        postgresql_locale: "fr_FR.UTF-8"
+        postgresql_ctype: "fr_FR.UTF-8"
+        postgresql_admin_user: "postgres"
+        postgresql_default_auth_method: "peer"
+        postgresql_listen_addresses: "*"
+        postgresql_wal_level: "replica"
+        postgresql_max_wal_senders: 10
+        postgresql_max_replication_slots: 10
+        postgresql_wal_keep_segments: 100
+        postgresql_hot_standby: on
+        postgresql_archive_mode: on
+        postgresql_archive_command: "test ! -f /tmp/%f && cp %p /tmp/%f"
+        postgresql_ext_install_repmgr: yes
+        postgresql_shared_preload_libraries:
+          - repmgr
+        # postgresql logging 
+        postgresql_log_checkpoints: on
+        postgresql_log_connections: on
+        postgresql_log_disconnections: on
+        postgresql_log_temp_files: 0
+        # pg_hba.conf
+        postgresql_pg_hba_custom:
+          - { type: "host", database: "all", user: "all", address: "192.168.56.0/24", method: "md5" }
+          - { type: "host", database: "replication", user: "{{ repmgr_user }}", address: "192.168.56.0/24", method: "trust" }  
+          - { type: "host", database: "replication", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
+          - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
+          - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "192.168.56.0/32", method: "trust" }  
+        # Databases
+        postgresql_databases:
+          - name: testdb
+            owner: admin
+            encoding: "UTF-8"
+          - name: "{{ repmgr_database }}"
+            owner: "{{ repmgr_user }}"
+            encoding: "UTF-8"
+        # Users
+        postgresql_users:
+          - name: admin
+            pass: secret # postgresql >=10 does not accept unencrypted passwords
+            encrypted: yes
+          - name: "{{ repmgr_user }}"
+            pass: "{{ repmgr_password }}"
+        # Roles
+        postgresql_user_privileges:
+          - name: admin
+            db: testdb
+            role_attr_flags: "SUPERUSER"
+          - name: "{{ repmgr_user }}"
+            db: "{{ repmgr_database }}"
+            priv: "ALL"
+            role_attr_flags: "SUPERUSER,REPLICATION"
 
 ```
 
@@ -28,101 +99,9 @@ ansible-galaxy install fidanf.postgresql-ha
 
 TODO
 
-#### Example variables
-
-```yaml
-# Basic settings
-postgresql_version: 12
-postgresql_encoding: "UTF-8"
-postgresql_locale: "en_US.UTF-8"
-postgresql_ctype: "en_US.UTF-8"
-
-postgresql_admin_user: "postgres"
-postgresql_default_auth_method: "peer"
-
-postgresql_service_enabled: false # should the service be enabled, default is true
-
-postgresql_cluster_name: "main"
-postgresql_cluster_reset: false
-
-# List of databases to be created (optional)
-# Note: for more flexibility with extensions use the postgresql_database_extensions setting.
-postgresql_databases:
-  - name: foobar
-    owner: baz          # optional; specify the owner of the database
-    hstore: yes         # flag to install the hstore extension on this database (yes/no)
-    uuid_ossp: yes      # flag to install the uuid-ossp extension on this database (yes/no)
-    citext: yes         # flag to install the citext extension on this database (yes/no)
-    encoding: "UTF-8"   # override global {{ postgresql_encoding }} variable per database
-    lc_collate: "en_GB.UTF-8"   # override global {{ postgresql_locale }} variable per database
-    lc_ctype: "en_GB.UTF-8"     # override global {{ postgresql_ctype }} variable per database
-
-# List of database extensions to be created (optional)
-postgresql_database_extensions:
-  - db: foobar
-    extensions:
-      - hstore
-      - citext
-
-# List of users to be created (optional)
-postgresql_users:
-  - name: baz
-    pass: pass
-    encrypted: yes  # if password should be encrypted, postgresql >= 10 does only accepts encrypted passwords
-
-# List of schemas to be created (optional)
-postgresql_database_schemas:
-  - database: foobar           # database name
-    schema: acme               # schema name
-    state: present
-
-  - database: foobar           # database name
-    schema: acme_baz           # schema name
-    owner: baz                 # owner name
-    state: present
-
-# List of user privileges to be applied (optional)
-postgresql_user_privileges:
-  - name: baz                   # user name
-    db: foobar                  # database
-    priv: "ALL"                 # privilege string format: example: INSERT,UPDATE/table:SELECT/anothertable:ALL
-    role_attr_flags: "CREATEDB" # role attribute flags
-
-# Manage replication with repmgr (optional)
-repmgr_target_group: pgcluster # ansible group name of the cluster
-repmgr_master: pgsql01 # ansible hostname of the master node
-
-postgresql_ext_install_repmgr: yes
-postgresql_wal_level: "replica"
-postgresql_max_wal_senders: 10
-postgresql_max_replication_slots: 10
-postgresql_wal_keep_segments: 100
-postgresql_hot_standby: on
-postgresql_archive_mode: on
-postgresql_archive_command: "test ! -f /tmp/%f && cp %p /tmp/%f"
-postgresql_shared_preload_libraries:
-  - repmgr
-
-postgresql_users:
-  - name: "{{ repmgr_user }}"
-    pass: "password"
-
-postgresql_databases:
-  - name: "{{ repmgr_database }}"
-    owner: "{{ repmgr_user }}"
-    encoding: "UTF-8"
-
-postgresql_user_privileges:
-  - name: "{{ repmgr_user }}"
-    db: "{{ repmgr_database }}"
-    priv: "ALL"
-    role_attr_flags: "SUPERUSER,REPLICATION"
-
-```
-
-Every other configuration parameter can be found in default variables :
-  - [defaults/main.yml](./defaults/main.yml)
-  - [defaults/repmgr.yml](./defaults/main.yml)
+Role default variables are split amongst two files :
+  - [001-postgresql.yml](./defaults/main/001-postgresql.yml)
+  - [002-repmgr.yml](./defaults/main/002-repmgr.yml)
 
 ## Verifying cluster functionality using Ansible ad-hoc command 
 
