@@ -89,7 +89,7 @@
     mode: 0700
     state: directory
 
-- name: PostgreSQL | Update configuration - pt. 1 (pg_hba.conf)
+- name: PostgreSQL | Update configuration - pt. 1 (pg_hba.conf) # TODO : consider refactoring using postgresql_pg_hba module instead
   template:
     src: pg_hba.conf.j2
     dest: "{{ postgresql_conf_directory }}/pg_hba.conf"
