@@ -1,10 +1,15 @@
 ## PostgreSQL HA
 
-Install and configure PostgreSQL cluster managed with repmgr. Add dependencies, extensions, databases and users.
+Install and configure a PostgreSQL high-availability cluster managed with repmgr. Add dependencies, extensions, databases and users. Works for standalone installations as well.
 
 #### Requirements
 
-Ansible >=2.9
+- Ansible >=2.9
+
+**Recommended, for each postgresql host**
+- Python 3 in PATH
+- Pip 3 in PATH
+- [psycopg2-binary](https://pypi.org/project/psycopg2-binary/)
 
 #### Installation
 
