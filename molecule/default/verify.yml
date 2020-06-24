@@ -9,9 +9,15 @@
         cmd: |
           repmgr cluster crosscheck
         executable: /bin/bash
+      become_user: "{{ postgresql_service_user }}"
       register: crosscheck
 
     - name: Print result
       debug:
         msg:
           "crosscheck": "{{ crosscheck.stdout_lines }}"
+
+    - name: Ensure testdb is created
+      shell:
+        cmd: psql -c '\l testdb' # returns 0 if exists
+      become_user: "{{ postgresql_service_user }}"
