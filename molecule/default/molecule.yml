@@ -55,6 +55,7 @@ provisioner:
         postgresql_version: 11
         repmgr_master: pgsql01
         repmgr_target_group: pgcluster
+        postgresql_service_user: postgres
         postgresql_listen_addresses: "*"
         postgresql_wal_level: "replica"
         postgresql_max_wal_senders: 10
@@ -72,6 +73,30 @@ provisioner:
           - { type: "host", database: "replication", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
           - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
           - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "192.168.30.0/24", method: "trust" } 
+        # Databases
+        postgresql_databases:
+          - name: "{{ repmgr_database }}"
+            owner: "{{ repmgr_user }}"
+            encoding: "UTF-8"
+          - name: testdb
+            owner: admin
+            encoding: "UTF-8"
+        # Users
+        postgresql_users:
+          - name: "{{ repmgr_user }}"
+            pass: "{{ repmgr_password }}"
+          - name: admin
+            pass: secret # postgresql >=10 does not accept unencrypted passwords
+            encrypted: yes
+        # Roles
+        postgresql_user_privileges:
+          - name: "{{ repmgr_user }}"
+            db: "{{ repmgr_database }}"
+            priv: "ALL"
+            role_attr_flags: "SUPERUSER,REPLICATION"
+          - name: admin
+            db: testdb
+            role_attr_flags: "SUPERUSER"
     host_vars:
       pgsql01:
         repmgr_node_id: 1
@@ -81,3 +106,4 @@ provisioner:
     defaults:
       callback_whitelist: "profile_tasks,timer"
       allow_world_readable_tmpfiles: true
+      ansible_python_interpreter: /usr/bin/python3
