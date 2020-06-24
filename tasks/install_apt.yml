@@ -3,7 +3,7 @@
 # validate www.postgresql.org (or probably any other source).
 - name: PostgreSQL | Make sure the CA certificates are available | apt
   apt:
-    pkg: ca-certificates
+    pkg: ['ca-certificates', 'gnupg']
     state: present
 
 - name: PostgreSQL | Add PostgreSQL repository apt-key | apt

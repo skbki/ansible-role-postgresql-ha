@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: yes
+
+  vars:
+    role_path: "{{ lookup('env', 'ROLE_PATH') }}"
+
+  roles:
+    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-postgresql-ha' }}"
