@@ -11,9 +11,11 @@
     - name: Gather facts for first time
       setup:
 
-    - name: Install python for Ansible
+    - name: Install python dependencies
       apt: 
-        name: python3-apt
+        name: 
+          - python3-apt
+          - python3-pip
         update_cache: yes
 
     - name: Use python3 by default
@@ -22,6 +24,18 @@
         link: /usr/bin/python
         name: python
         priority: 1
+
+    - name: Use pip3 by default
+      alternatives: 
+        path: /usr/bin/pip3
+        link: /usr/bin/pip
+        name: pip
+        priority: 1
+        
+    - name: Install pip dependencies
+      pip:
+        name: psycopg2
+        state: present
 
     - name: Build hosts file
       lineinfile: 
