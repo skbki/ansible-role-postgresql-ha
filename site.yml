@@ -53,28 +53,28 @@
           - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "192.168.56.0/32", method: "trust" }  
         # Databases
         postgresql_databases:
-          - name: testdb
-            owner: admin
-            encoding: "UTF-8"
           - name: "{{ repmgr_database }}"
             owner: "{{ repmgr_user }}"
             encoding: "UTF-8"
+          - name: testdb
+            owner: admin
+            encoding: "UTF-8"
         # Users
         postgresql_users:
+          - name: "{{ repmgr_user }}"
+            pass: "{{ repmgr_password }}"
           - name: admin
             pass: secret # postgresql >=10 does not accept unencrypted passwords
             encrypted: yes
-          - name: "{{ repmgr_user }}"
-            pass: "{{ repmgr_password }}"
         # Roles
         postgresql_user_privileges:
-          - name: admin
-            db: testdb
-            role_attr_flags: "SUPERUSER"
           - name: "{{ repmgr_user }}"
             db: "{{ repmgr_database }}"
             priv: "ALL"
             role_attr_flags: "SUPERUSER,REPLICATION"
+          - name: admin
+            db: testdb
+            role_attr_flags: "SUPERUSER"
         # Required configuration items
         repmgr_target_group: "pgcluster"
         repmgr_master: "pgsql01"
