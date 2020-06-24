@@ -1,0 +1,17 @@
+---
+- hosts: pgcluster
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Verify cluster functionality
+      shell: 
+        cmd: |
+          repmgr cluster crosscheck
+        executable: /bin/bash
+      register: crosscheck
+
+    - name: Print result
+      debug:
+        msg:
+          "crosscheck": "{{ crosscheck.stdout_lines }}"

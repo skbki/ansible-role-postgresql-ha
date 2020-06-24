@@ -1,0 +1,33 @@
+---
+- name: Prepare
+  hosts: pgcluster
+  gather_facts: no
+  become: yes
+
+  pre_tasks:
+    - name: Wait for SSH
+      wait_for_connection:
+
+    - name: Gather facts for first time
+      setup:
+
+    - name: Install python for Ansible
+      apt: 
+        name: python3-apt
+        update_cache: yes
+
+    - name: Use python3 by default
+      alternatives: 
+        path: /usr/bin/python3
+        link: /usr/bin/python
+        name: python
+        priority: 1
+
+    - name: Build hosts file
+      lineinfile: 
+        path: /etc/hosts 
+        regexp: '.*{{ item }}$'
+        line: "{{ hostvars[item].ansible_eth1.ipv4.address }} {{ item }}"
+        state: present
+      when: hostvars[item].ansible_eth1.ipv4.address is defined
+      loop: "{{ groups[repmgr_target_group] }}"

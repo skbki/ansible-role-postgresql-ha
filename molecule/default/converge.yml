@@ -1,0 +1,19 @@
+---
+- name: Converge
+  hosts: pgcluster
+  gather_facts: yes
+  become: yes
+  vars:
+    role_path: "{{ lookup('env', 'ROLE_PATH') }}"
+  pre_tasks:
+    - name: Debug variables
+      debug:
+        msg:
+          "postgresql_version": "{{ postgresql_version }}"
+          "repmgr_master": "{{ repmgr_master }}"
+          "repmgr_gpg_key_url": "{{ repmgr_gpg_key_url }}"
+          "repmgr_apt_repository": "{{ repmgr_apt_repository }}"
+          "repmgr_target_group": "{{ repmgr_target_group }}"
+          "repmgr_node_id": "{{ repmgr_node_id }}"
+  roles:
+    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-postgresql-ha' }}"
