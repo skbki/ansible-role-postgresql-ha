@@ -1,6 +1,12 @@
 ## PostgreSQL HA
 
+[![Build Status](https://travis-ci.com/fidanf/ansible-role-postgresql-ha.svg?branch=master)](https://travis-ci.com/fidanf/ansible-role-postgresql-ha)
+
 Install and configure a PostgreSQL high-availability cluster managed with repmgr. Add dependencies, extensions, databases and users. Works for standalone installations as well.
+
+Tested with :
+- Debian 10.x :heavy_check_mark:
+- Ubuntu 18.04.x :heavy_check_mark:
 
 #### Requirements
 
@@ -108,10 +114,6 @@ In order to exactly figure out the purpose and valid values for each of these va
             role_attr_flags: "SUPERUSER,REPLICATION"
 
 ```
-
-#### Testing
-
-TODO
 
 ## Verifying cluster functionality using Ansible ad-hoc command 
 
