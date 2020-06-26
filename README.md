@@ -9,7 +9,9 @@ Install and configure a PostgreSQL high-availability cluster managed with repmgr
 **Recommended, for each postgresql host**
 - Python 3 in PATH
 - Pip 3 in PATH
-- [psycopg2-binary](https://pypi.org/project/psycopg2-binary/)
+- [psycopg2-binary](https://pypi.org/project/psycopg2-binary/) (itself requires libpq-dev apt-package)
+
+You can take a look at [prepare.yml](molecule/default/prepare.yml) to check out an example setup for Python 3.
 
 #### Installation
 
@@ -31,7 +33,7 @@ Role default variables are split amongst two files :
   - [001-postgresql.yml](./defaults/main/001-postgresql.yml)
   - [002-repmgr.yml](./defaults/main/002-repmgr.yml)
 
-In order to exactly figure out the purpose and valid values for each of these variables, do not hesitate to inspect all the Jinja templates in the [templates](./templates) directory. Original default configuration files are also included.
+In order to exactly figure out the purpose and valid values for each of these variables, do not hesitate to inspect all the Jinja templates in the [templates](./templates) directory. Original default configuration files are also included (`.orig`).
 
 #### Example Playbook
 
