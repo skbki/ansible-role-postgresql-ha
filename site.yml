@@ -9,11 +9,12 @@
     - name: Debug variables
       debug:
         msg:
-          "repmgr_gpg_key_url": "{{ repmgr_gpg_key_url }}"
-          "repmgr_apt_repository": "{{ repmgr_apt_repository }}"
-          "repmgr_target_group": "{{ repmgr_target_group }}"
-          "repmgr_target_group_hosts": "{{ repmgr_target_group_hosts }}"
-          "repmgr_master": "{{ repmgr_master }}"
+        "postgresql_version": "{{ postgresql_version }}"
+        "repmgr_master": "{{ repmgr_master }}"
+        "repmgr_gpg_key_url": "{{ repmgr_gpg_key_url }}"
+        "repmgr_apt_repository": "{{ repmgr_apt_repository }}"
+        "repmgr_target_group": "{{ repmgr_target_group }}"
+        "repmgr_node_id": "{{ repmgr_node_id }}"
   roles:
     - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-postgresql-ha' }}"
       vars:
@@ -52,29 +53,28 @@
           - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "192.168.56.0/32", method: "trust" }  
         # Databases
         postgresql_databases:
-          - name: testdb
-            owner: admin
-            encoding: "UTF-8"
           - name: "{{ repmgr_database }}"
             owner: "{{ repmgr_user }}"
             encoding: "UTF-8"
+          - name: testdb
+            owner: admin
+            encoding: "UTF-8"
         # Users
         postgresql_users:
+          - name: "{{ repmgr_user }}"
+            pass: "{{ repmgr_password }}"
           - name: admin
             pass: secret # postgresql >=10 does not accept unencrypted passwords
             encrypted: yes
-          - name: "{{ repmgr_user }}"
-            pass: "{{ repmgr_password }}"
         # Roles
         postgresql_user_privileges:
-          - name: admin
-            db: testdb
-            role_attr_flags: "SUPERUSER"
           - name: "{{ repmgr_user }}"
             db: "{{ repmgr_database }}"
             priv: "ALL"
             role_attr_flags: "SUPERUSER,REPLICATION"
+          - name: admin
+            db: testdb
+            role_attr_flags: "SUPERUSER"
         # Required configuration items
         repmgr_target_group: "pgcluster"
-        repmgr_target_group_hosts: "{{ groups[repmgr_target_group] }}"
         repmgr_master: "pgsql01"

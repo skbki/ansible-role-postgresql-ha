@@ -1,18 +1,48 @@
 ---
 - name: Prepare
-  hosts: all
-  gather_facts: yes
+  hosts: pgcluster
+  gather_facts: no
   become: yes
 
-  tasks:
+  pre_tasks:
+    - name: Wait for SSH
+      wait_for_connection:
+
+    - name: Gather facts for first time
+      setup:
+
     - name: Install python dependencies
       apt: 
-        name: python3-apt
+        name: 
+          - python3-apt
+          - python3-pip
+          - libpq-dev # required for psycog2
         update_cache: yes
 
-    - name: Ensure python is available in PATH
-      alternatives:
-        name: python
-        link: /usr/bin/python
+    - name: Use python3 by default
+      alternatives: 
         path: /usr/bin/python3
+        link: /usr/bin/python
+        name: python
         priority: 1
+
+    - name: Use pip3 by default
+      alternatives: 
+        path: /usr/bin/pip3
+        link: /usr/bin/pip
+        name: pip
+        priority: 1
+        
+    - name: Install pip dependencies
+      pip:
+        name: psycopg2
+        state: present
+
+    - name: Build hosts file
+      lineinfile: 
+        path: /etc/hosts 
+        regexp: '.*{{ item }}$'
+        line: "{{ hostvars[item].ansible_eth1.ipv4.address }} {{ item }}"
+        state: present
+      when: hostvars[item].ansible_eth1.ipv4.address is defined
+      loop: "{{ groups[repmgr_target_group] }}"

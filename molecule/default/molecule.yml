@@ -1,25 +1,109 @@
 ---
 dependency:
   name: galaxy
-driver:
-  name: docker
 lint: |
   set -e
   yamllint .
   ansible-lint
+driver:
+  name: vagrant
+  provider:
+    name: libvirt
+    ssh_connection_options:
+      - -o ControlMaster=auto
+      - -o ControlPath=~/.ansible/cp/%r@%h-%p
+      - -o ControlPersist 1h
 platforms:
-  - name: instance
-    output_log: true
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian10}-ansible:latest"
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    privileged: true
-    pre_build_image: true
+  - name: pgsql01
+    box: ${MOLECULE_DISTRO:-"generic/debian10"}
+    groups: 
+      - pgcluster
+    instance_raw_config_args:
+      - 'vm.hostname = "pgsql01"'
+      - 'ssh.keep_alive = true'
+      - 'ssh.forward_agent = true'
+      - 'ssh.insert_key = false'
+    memory: 1024
+    cpus: 1
+    interfaces:
+      - network_name: private_network
+        type: static
+        ip: 192.168.30.2
+        auto_config: true
+  - name: pgsql02
+    box: ${MOLECULE_DISTRO:-"generic/debian10"}
+    instance_raw_config_args:
+      - 'vm.hostname = "pgsql02"'
+      - 'ssh.keep_alive = true'
+      - 'ssh.forward_agent = true'
+      - 'ssh.insert_key = false'
+    groups: 
+      - pgcluster
+    memory: 1024
+    cpus: 1
+    interfaces:
+      - network_name: private_network
+        type: static
+        ip: 192.168.30.3
+        auto_config: true
 provisioner:
   name: ansible
   log: true
-  # inventory:
-  #   group_vars:
-  #     all:
-verifier:
-  name: ansible
+  inventory:
+    group_vars:
+      pgcluster: 
+        postgresql_version: 11
+        repmgr_master: pgsql01
+        repmgr_target_group: pgcluster
+        postgresql_service_user: postgres
+        postgresql_listen_addresses: "*"
+        postgresql_wal_level: "replica"
+        postgresql_max_wal_senders: 10
+        postgresql_max_replication_slots: 10
+        postgresql_wal_keep_segments: 100
+        postgresql_hot_standby: on
+        postgresql_archive_mode: on
+        postgresql_archive_command: "test ! -f /tmp/%f && cp %p /tmp/%f"
+        postgresql_ext_install_repmgr: yes
+        postgresql_shared_preload_libraries:
+          - repmgr
+        postgresql_pg_hba_custom:
+          - { type: "host", database: "all", user: "all", address: "192.168.30.0/24", method: "md5" }
+          - { type: "host", database: "replication", user: "{{ repmgr_user }}", address: "192.168.30.0/24", method: "trust" }  
+          - { type: "host", database: "replication", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
+          - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "127.0.0.1/32", method: "trust" }  
+          - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "192.168.30.0/24", method: "trust" } 
+        # Databases
+        postgresql_databases:
+          - name: "{{ repmgr_database }}"
+            owner: "{{ repmgr_user }}"
+            encoding: "UTF-8"
+          - name: testdb
+            owner: admin
+            encoding: "UTF-8"
+        # Users
+        postgresql_users:
+          - name: "{{ repmgr_user }}"
+            pass: "{{ repmgr_password }}"
+          - name: admin
+            pass: secret # postgresql >=10 does not accept unencrypted passwords
+            encrypted: yes
+        # Roles
+        postgresql_user_privileges:
+          - name: "{{ repmgr_user }}"
+            db: "{{ repmgr_database }}"
+            priv: "ALL"
+            role_attr_flags: "SUPERUSER,REPLICATION"
+          - name: admin
+            db: testdb
+            role_attr_flags: "SUPERUSER"
+    host_vars:
+      pgsql01:
+        repmgr_node_id: 1
+      pgsql02:
+        repmgr_node_id: 2
+  config_options:
+    defaults:
+      callback_whitelist: "profile_tasks,timer"
+      allow_world_readable_tmpfiles: true
+      ansible_python_interpreter: /usr/bin/python3
