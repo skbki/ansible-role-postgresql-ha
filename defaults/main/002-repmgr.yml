@@ -100,10 +100,10 @@ repmgr_child_nodes_disconnect_timeout: 30
 repmgr_child_nodes_disconnect_command: ''
 
 # Service commands
-repmgr_service_start_command: "sudo systemctl start postgresql-{{ postgresql_version }}"
-repmgr_service_stop_command: "sudo systemctl stop postgresql-{{ postgresql_version }}"
-repmgr_service_restart_command: "sudo systemctl restart postgresql-{{ postgresql_version }}"
-repmgr_service_reload_command: "sudo systemctl reload postgresql-{{ postgresql_version }}"
+repmgr_service_start_command: "sudo systemctl start postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
+repmgr_service_stop_command: "sudo systemctl stop postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
+repmgr_service_restart_command: "sudo systemctl restart postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
+repmgr_service_reload_command: "sudo systemctl reload postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
 repmgr_service_promote_command: ""
 
 # Warning levels
