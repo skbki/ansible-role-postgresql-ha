@@ -4,10 +4,10 @@
     repmgr_target_group_hosts: "{{ groups[repmgr_target_group] }}"
 
 - name: Repmgr | Detect primary
-  shell: "{{ postgresql_bin_directory }}/repmgr -f {{ postgresql_conf_directory }}/repmgr.conf cluster show | grep primary | cut -d '|' -f 2"
+  shell: "repmgr -f {{ postgresql_conf_directory }}/repmgr.conf cluster show | grep primary | cut -d '|' -f 2"
   register: repmgr_primary_check
   become: yes
-  become_user: postgres
+  become_user: "{{ postgresql_service_user }}"
   ignore_errors: yes
 
 - name: Repmgr | Declare as primary for existing installation
