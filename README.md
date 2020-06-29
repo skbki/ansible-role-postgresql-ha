@@ -13,8 +13,8 @@ Tested with :
 - Ansible >=2.9
 
 **Recommended, for each postgresql host**
-- Python 3 in PATH
-- Pip 3 in PATH
+- Python3 in PATH
+- Pip3 in PATH
 - [psycopg2-binary](https://pypi.org/project/psycopg2-binary/) (itself requires libpq-dev apt-package)
 
 You can take a look at [prepare.yml](molecule/default/prepare.yml) to check out an example setup for Python 3.
