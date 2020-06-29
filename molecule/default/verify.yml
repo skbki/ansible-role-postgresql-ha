@@ -32,7 +32,7 @@
     - name: Print result
       debug:
         msg:
-          "repmgr_switchover_check": "{{ repmgr_switchover_check.stderr_lines }}"
+          "repmgr_switchover_check": "{{ repmgr_switchover_check.stdout_lines }}"
 
     - name: Perform actual manual switchover
       shell:
