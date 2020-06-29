@@ -14,17 +14,17 @@
   debug:
     msg:
       "repmgr_primary": "{{ repmgr_primary_check.stdout | trim }}"
-      "repmgr_is_primary": "{{ inventory_hostname == repmgr_primary_check.stdout | trim }}"
+      "repmgr_is_primary": "{{ ansible_hostname == repmgr_primary_check.stdout | trim }}"
     verbosity: 1
 
 - name: Repmgr | Declare as primary for existing installation
   set_fact:
-    repmgr_primary: "{{ inventory_hostname == repmgr_primary_check.stdout | trim }}"
+    repmgr_primary: "{{ ansible_hostname == repmgr_primary_check.stdout | trim }}"
   when: repmgr_primary_check.stdout is defined and repmgr_primary_check.rc == 0
 
 - name: Repmgr | Declare as primary for new installation
   set_fact:
-    repmgr_primary: "{{ inventory_hostname == repmgr_master }}"
+    repmgr_primary: "{{ ansible_hostname == repmgr_master }}"
   when: repmgr_primary_check.stdout == ""
 
 - name: Repmgr | Ensure repmgr_master host exists
