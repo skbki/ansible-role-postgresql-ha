@@ -6,13 +6,34 @@
   vars:
     role_path: "{{ lookup('env', 'ROLE_PATH') }}"
   pre_tasks:
+    - name: Install python dependencies
+      apt: 
+        name: 
+          - python3-apt
+          - python3-pip
+          - libpq-dev # required for psycog2
+        update_cache: yes
+    - name: Use python3 by default
+      alternatives: 
+        path: /usr/bin/python3
+        link: /usr/bin/python
+        name: python
+        priority: 1
+    - name: Use pip3 by default
+      alternatives: 
+        path: /usr/bin/pip3
+        link: /usr/bin/pip
+        name: pip
+        priority: 1
+    - name: Install pip dependencies
+      pip:
+        name: psycopg2
+        state: present
     - name: Debug variables
       debug:
         msg:
           "postgresql_version": "{{ postgresql_version }}"
           "repmgr_master": "{{ repmgr_master }}"
-          "repmgr_gpg_key_url": "{{ repmgr_gpg_key_url }}"
-          "repmgr_apt_repository": "{{ repmgr_apt_repository }}"
           "repmgr_target_group": "{{ repmgr_target_group }}"
           "repmgr_node_id": "{{ repmgr_node_id }}"
   roles:
