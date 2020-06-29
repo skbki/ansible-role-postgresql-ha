@@ -6,8 +6,7 @@
   tasks:
     - name: Verify cluster functionality
       shell: 
-        cmd: |
-          repmgr cluster crosscheck
+        cmd: repmgr cluster crosscheck
         executable: /bin/bash
       become_user: "{{ postgresql_service_user }}"
       register: cluster_crosscheck
@@ -22,25 +21,22 @@
         cmd: psql -c '\l testdb' # returns 0 if exists
       become_user: "{{ postgresql_service_user }}"
 
-    - name: Perform manuel failover check
+    - name: Perform manual failover check
       shell:
-        cmd: |
-          repmgr standby switchover --siblings-follow --dry-run
+        cmd: repmgr standby switchover --siblings-follow --dry-run
         executable: /bin/bash
       become_user: "{{ postgresql_service_user }}"
       when: ansible_hostname == 'pgsql02'
       register: repmgr_switchover_check
-      failed_when: repmgr_switchover_check.rc not in [130]
 
     - name: Print result
       debug:
         msg:
-          "repmgr_switchover_check": "repmgr_switchover_check.stderr_lines"
+          "repmgr_switchover_check": "{{ repmgr_switchover_check.stderr_lines }}"
 
     - name: Perform actual manual switchover
       shell:
-        cmd: |
-          repmgr standby switchover --siblings-follow
+        cmd: repmgr standby switchover --siblings-follow
         executable: /bin/bash
       become_user: "{{ postgresql_service_user }}"
       when: ansible_hostname == 'pgsql02'
@@ -51,8 +47,7 @@
 
     - name: Show cluster status
       shell:
-        cmd: |
-          repmgr cluster show
+        cmd: repmgr cluster show
         executable: /bin/bash
       become_user: "{{ postgresql_service_user }}"
       register: cluster_status
