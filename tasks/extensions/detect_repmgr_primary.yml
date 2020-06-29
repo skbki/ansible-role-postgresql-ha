@@ -13,7 +13,7 @@
 - name: Repmgr | Debug check
   debug:
     msg:
-      "repmgr_primary": "{{ repmgr_primary_check.stdout | trim }}"
+      "repmgr_primary_hostname": "{{ repmgr_primary_check.stdout | trim }}"
       "repmgr_is_primary": "{{ ansible_hostname == repmgr_primary_check.stdout | trim }}"
     verbosity: 1
 
