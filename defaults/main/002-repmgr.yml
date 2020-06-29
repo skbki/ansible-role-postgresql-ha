@@ -100,11 +100,11 @@ repmgr_child_nodes_disconnect_timeout: 30
 repmgr_child_nodes_disconnect_command: ''
 
 # Service commands
-repmgr_service_start_command: "sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} start"
-repmgr_service_stop_command: "sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} stop"
-repmgr_service_restart_command: "sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} restart"
-repmgr_service_reload_command: "sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} reload"
-repmgr_service_promote_command: ""
+repmgr_service_start_command: sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} start
+repmgr_service_stop_command: sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} stop
+repmgr_service_restart_command: sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} restart
+repmgr_service_reload_command: sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} reload
+repmgr_service_promote_command: /usr/lib/postgresql/{{ postgresql_version }}/bin/pg_ctl -w -D {{ postgresql_data_directory }} promote
 
 # Warning levels
 repmgr_archive_ready_warning: 16
