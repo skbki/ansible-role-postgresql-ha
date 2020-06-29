@@ -1,8 +1,9 @@
 ---
 - name: PostgreSQL | Ensure PostgreSQL is running
-  service:
-    name: "{{ postgresql_service_name }}"
-    state: started
+  shell: 
+    cmd: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} status
+    executable: /bin/bash
+  become_user: "{{ postgresql_service_user }}"
 
 - name: PostgreSQL | Make sure the PostgreSQL databases are present
   postgresql_db:

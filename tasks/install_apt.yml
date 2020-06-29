@@ -42,6 +42,7 @@
     update_cache: yes
     default_release: "{{ postgresql_default_release | default(ansible_distribution_release + '-pgdg') }}"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  register: postgresql_install
   environment: "{{ postgresql_env }}"
 
 - name: PostgreSQL | PGTune | apt
@@ -52,3 +53,16 @@
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
   environment: "{{ postgresql_env }}"
   when: postgresql_pgtune
+
+- name: PostgreSQL | Shutdown systemd-based instance upon first installation
+  service:
+    name: "postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
+    state: stopped
+  when: postgresql_install.changed
+
+- name: PostgreSQL | Start postgresql using pg_ctlcluster binary
+  shell: 
+    cmd: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} restart
+    executable: /bin/bash
+  become: yes
+  become_user: "{{ postgresql_service_user }}"
