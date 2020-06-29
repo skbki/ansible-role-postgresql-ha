@@ -5,8 +5,10 @@
 Install and configure a PostgreSQL high-availability cluster managed with repmgr. Add dependencies, extensions, databases and users. Works for standalone installations as well.
 
 Tested with :
-- Debian 10.x :heavy_check_mark:
-- Ubuntu 18.04.x :heavy_check_mark:
+  - Debian 10.x :heavy_check_mark:
+  - Ubuntu 18.04.x :heavy_check_mark:
+
+---
 
 - [PostgreSQL HA](#postgresql-ha)
   - [Requirements](#requirements)
