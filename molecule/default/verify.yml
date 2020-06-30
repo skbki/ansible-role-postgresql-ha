@@ -33,6 +33,7 @@
       debug:
         msg:
           "repmgr_switchover_check": "{{ repmgr_switchover_check.stdout_lines }}"
+      when: ansible_hostname == 'pgsql02'
 
     - name: Perform actual manual switchover
       shell:
