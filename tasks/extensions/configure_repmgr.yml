@@ -6,6 +6,12 @@
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0640
+  notify: reload repmgr
+
+- name: Repmgr | Upload logrotate configuration
+  template:
+    src: repmgr_logroate.j2
+    dest: /etc/logrotate.d/repmgr
 
 - name: Repmgr | Create repmgr.conf symlink for shorter commands # see: https://repmgr.org/docs/4.0/configuration-file.html
   file:
@@ -136,8 +142,8 @@
   when: repmgr_monitoring_history == "true" or repmgr_failover == "automatic"
 
 - name: Repmgr | Setup cluster monitoring history cleanup with cron task
-  copy:
-    content: "repmgr cluster cleanup --keep-history={{ repmgr_keep_history_days }}"
-    dest: "/etc/cron.daily/repmgr_cleanup"
-    mode: 0755
-  when: repmgr_monitoring_history == "true" or repmgr_failover == "automatic"
+  cron:
+    name: Purges repmgr.monitoring_history table
+    job: "repmgr cluster cleanup --keep-history={{ repmgr_keep_history_days }}"
+    special_time: daily
+  when: repmgr_monitoring_history and repmgr_failover == 'automatic'

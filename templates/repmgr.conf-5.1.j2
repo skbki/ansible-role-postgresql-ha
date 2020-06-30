@@ -274,7 +274,7 @@ node_rejoin_timeout={{repmgr_node_rejoin_timeout}}			# The maximum length of tim
 # These settings are only applied when repmgrd is running. Values shown
 # are defaults.
 
-failover={{repmgr_failover}}			# one of 'automatic', 'manual'.
+failover='{{repmgr_failover}}'		# one of 'automatic', 'manual'.
 					# determines what action to take in the event of upstream failure
 					#
 					# 'automatic': repmgrd will automatically attempt to promote the
@@ -294,11 +294,11 @@ reconnect_attempts={{repmgr_reconnect_attempts}}		# Number of attempts which wil
 					# primary (or other upstream node)
 reconnect_interval={{repmgr_reconnect_interval}}		# Interval between attempts to reconnect to an unreachable
 					# primary (or other upstream node)
-{{ '' if repmgr_promote_command else '#' }}promote_command={{repmgr_promote_command}}		# command repmgrd executes when promoting a new primary; use something like:
+{{ '' if repmgr_promote_command else '#' }}promote_command='{{repmgr_promote_command}}'		# command repmgrd executes when promoting a new primary; use something like:
 					#
 					#     repmgr standby promote -f /etc/repmgr.conf
 					#
-{{ '' if repmgr_follow_command else '#' }}follow_command={{repmgr_follow_command}}		# command repmgrd executes when instructing a standby to follow a new primary;
+{{ '' if repmgr_follow_command else '#' }}follow_command='{{repmgr_follow_command}}'		# command repmgrd executes when instructing a standby to follow a new primary;
 					# use something like:
 					#
 					#     repmgr standby follow -f /etc/repmgr.conf -W --upstream-node-id=%n
