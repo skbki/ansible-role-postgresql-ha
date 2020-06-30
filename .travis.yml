@@ -8,6 +8,7 @@ env:
     - VAGRANT_DEFAULT_PROVIDER=libvirt
     - ROLE_PATH=$TRAVIS_BUILD_DIR
   jobs:
+    - MOLECULE_DISTRO: generic/ubuntu2004
     - MOLECULE_DISTRO: generic/ubuntu1804
     - MOLECULE_DISTRO: generic/debian10
 
