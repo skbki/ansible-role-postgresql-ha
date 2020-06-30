@@ -53,6 +53,7 @@ provisioner:
     group_vars:
       pgcluster: 
         postgresql_version: 11
+        postgresql_port: 5432
         repmgr_master: pgsql01
         repmgr_target_group: pgcluster
         postgresql_service_user: postgres

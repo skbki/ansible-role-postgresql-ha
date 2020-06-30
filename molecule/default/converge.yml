@@ -11,8 +11,6 @@
         msg:
           "postgresql_version": "{{ postgresql_version }}"
           "repmgr_master": "{{ repmgr_master }}"
-          "repmgr_gpg_key_url": "{{ repmgr_gpg_key_url }}"
-          "repmgr_apt_repository": "{{ repmgr_apt_repository }}"
           "repmgr_target_group": "{{ repmgr_target_group }}"
           "repmgr_node_id": "{{ repmgr_node_id }}"
   roles:

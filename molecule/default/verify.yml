@@ -6,18 +6,54 @@
   tasks:
     - name: Verify cluster functionality
       shell: 
-        cmd: |
-          repmgr cluster crosscheck
+        cmd: repmgr cluster crosscheck
         executable: /bin/bash
       become_user: "{{ postgresql_service_user }}"
-      register: crosscheck
+      register: cluster_crosscheck
 
     - name: Print result
       debug:
         msg:
-          "crosscheck": "{{ crosscheck.stdout_lines }}"
+          "cluster_crosscheck": "{{ cluster_crosscheck.stdout_lines }}"
 
     - name: Ensure testdb is created
       shell:
         cmd: psql -c '\l testdb' # returns 0 if exists
       become_user: "{{ postgresql_service_user }}"
+
+    - name: Perform manual failover check
+      shell:
+        cmd: repmgr standby switchover --siblings-follow --dry-run
+        executable: /bin/bash
+      become_user: "{{ postgresql_service_user }}"
+      when: ansible_hostname == 'pgsql02'
+      register: repmgr_switchover_check
+
+    - name: Print result
+      debug:
+        msg:
+          "repmgr_switchover_check": "{{ repmgr_switchover_check.stdout_lines }}"
+      when: ansible_hostname == 'pgsql02'
+
+    - name: Perform actual manual switchover
+      shell:
+        cmd: repmgr standby switchover --siblings-follow
+        executable: /bin/bash
+      become_user: "{{ postgresql_service_user }}"
+      when: ansible_hostname == 'pgsql02'
+
+    - name: Wait for pgsql service
+      wait_for:
+        port: "{{ postgresql_port }}"
+
+    - name: Show cluster status
+      shell:
+        cmd: repmgr cluster show
+        executable: /bin/bash
+      become_user: "{{ postgresql_service_user }}"
+      register: cluster_status
+
+    - name: Print result
+      debug:
+        msg:
+          "cluster_status": "{{ cluster_status.stdout_lines }}"

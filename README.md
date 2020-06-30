@@ -5,10 +5,24 @@
 Install and configure a PostgreSQL high-availability cluster managed with repmgr. Add dependencies, extensions, databases and users. Works for standalone installations as well.
 
 Tested with :
-- Debian 10.x :heavy_check_mark:
-- Ubuntu 18.04.x :heavy_check_mark:
+  - Debian 10.x :heavy_check_mark:
+  - Ubuntu 18.04.x :heavy_check_mark:
 
-#### Requirements
+---
+
+- [PostgreSQL HA](#postgresql-ha)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Example Inventory](#example-inventory)
+  - [Role variables](#role-variables)
+  - [Example Playbook](#example-playbook)
+- [Usefull commands to run after your first installation](#usefull-commands-to-run-after-your-first-installation)
+  - [Verifying cluster functionality](#verifying-cluster-functionality)
+  - [Show cluster status](#show-cluster-status)
+  - [List nodes and their attributes](#list-nodes-and-their-attributes)
+- [License](#license)
+
+### Requirements
 
 - Ansible >=2.9
 
@@ -19,13 +33,13 @@ Tested with :
 
 You can take a look at [prepare.yml](molecule/default/prepare.yml) to check out an example setup for Python 3.
 
-#### Installation
+### Installation
 
 ```bash
 ansible-galaxy install fidanf.postgresql-ha
 ```
 
-#### Example Inventory
+### Example Inventory
 
 ```ini
 [pgcluster]
@@ -33,7 +47,7 @@ pgsql01     ansible_host=192.168.56.10  repmgr_node_id=1
 pgsql02     ansible_host=192.168.56.11  repmgr_node_id=2
 pgsql03     ansible_host=192.168.56.12  repmgr_node_id=3
 ```
-#### Role variables
+### Role variables
 
 Role default variables are split amongst two files :
   - [001-postgresql.yml](./defaults/main/001-postgresql.yml)
@@ -41,7 +55,7 @@ Role default variables are split amongst two files :
 
 In order to exactly figure out the purpose and valid values for each of these variables, do not hesitate to inspect all the Jinja templates in the [templates](./templates) directory. Original default configuration files are also included (`.orig`).
 
-#### Example Playbook
+### Example Playbook
 
 ```yaml
 ---
@@ -115,14 +129,26 @@ In order to exactly figure out the purpose and valid values for each of these va
 
 ```
 
-## Verifying cluster functionality using Ansible ad-hoc command 
+## Usefull commands to run after your first installation
+
+### Verifying cluster functionality
 
 ```bash
-ansible pgcluster -b --become-user postgres -m shell -a "repmgr cluster show"
 ansible pgcluster -b --become-user postgres -m shell -a "repmgr cluster crosscheck"
 ```
 
-License
--------
+### Show cluster status
+
+```bash
+ansible pgcluster -b --become-user postgres -m shell -a "repmgr cluster show"
+```
+
+### List nodes and their attributes
+
+```bash
+ansible pgcluster -b --become-user postgres -m shell -a "repmgr node status"
+```
+
+## License
 
 MIT / BSD
