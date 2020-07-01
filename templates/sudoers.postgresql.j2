@@ -1,3 +1,6 @@
 # this is required when running sudo over ssh without -t:
 Defaults:postgres !requiretty
-postgres ALL = NOPASSWD: /usr/bin/pg_ctlcluster, /usr/lib/postgresql/{{ postgresql_version }}/bin/pg_ctl
+postgres ALL = NOPASSWD: /usr/bin/pg_ctlcluster, \
+  /usr/lib/postgresql/{{ postgresql_version }}/bin/pg_ctl, \
+  /usr/bin/systemctl start repmgrd, \
+  /usr/bin/systemctl stop repmgrd

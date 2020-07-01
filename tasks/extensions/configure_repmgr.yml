@@ -91,7 +91,7 @@
       "repmgr_primary_hostname": "{{ repmgr_primary_hostname == ansible_hostname }}"
 
 - name: Repmgr | Register as primary
-  command: "repmgr primary register"
+  command: "repmgr primary register -F"
   become: yes
   become_user: "{{ postgresql_service_user }}"
   when: ansible_hostname == repmgr_primary_hostname
@@ -135,11 +135,22 @@
   become_user: "{{ postgresql_service_user }}"
 
 - name: Repmgr | Ensure repmgrd is running
-  service:
-    name: repmgrd
-    state: started
-    enabled: yes
-  when: repmgr_monitoring_history == "true" or repmgr_failover == "automatic"
+  command: "/usr/bin/repmgrd daemon start"
+  when: repmgr_monitoring_history or repmgr_failover == 'automatic'
+  become: yes
+  become_user: "{{ postgresql_service_user }}"
+
+- name: Repmgr | Show repmgrd status
+  command: "repmgr daemon status"
+  register: repmgrd_status
+  when: repmgr_monitoring_history or repmgr_failover == 'automatic'
+  become: yes
+  become_user: "{{ postgresql_service_user }}"
+
+- name: Debug repmgrd status
+  debug:
+    msg:
+      "{{ repmgrd_status.stdout_lines }}"
 
 - name: Repmgr | Setup cluster monitoring history cleanup with cron task
   cron:

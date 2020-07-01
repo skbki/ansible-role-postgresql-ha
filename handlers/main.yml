@@ -7,7 +7,7 @@
   become_user: "{{ postgresql_service_user }}"
 
 - name: reload repmgr
-  service:
+  sysvinit:
     name: repmgrd
     state: reloaded
   become: yes

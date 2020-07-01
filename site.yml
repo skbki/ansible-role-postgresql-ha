@@ -43,11 +43,13 @@
         repmgr_target_group: pgcluster
         repmgr_master: pgsql01
         repmgr_failover: automatic
-        repmgr_promote_command: /usr/bin/repmgr standby promote --siblings-follow --log-to-file
-        repmgr_follow_command: /usr/bin/repmgr standby follow -W --upstream-node-id=%n --log-to-file
+        repmgr_promote_command: /usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file
+        repmgr_follow_command: /usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n
         repmgr_monitoring_history: "yes"
-        repmgr_log_level: DEBUG
         repmgr_connection_check_type: query
+        repmgr_log_level: DEBUG
+        repmgr_reconnect_attempts: 2
+        repmgr_reconnect_interval: 10
         # Basic settings
         postgresql_version: 11
         postgresql_cluster_name: main

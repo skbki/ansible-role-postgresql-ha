@@ -71,7 +71,7 @@ repmgr_barman_config: ""
 repmgr_repmgrd_pid_file: ""
 
 # Fail-over
-repmgr_failover: "manual"
+repmgr_failover: manual
 repmgr_priority: 100
 repmgr_connection_check_type: ping # Accepted: ping, connection, query
 repmgr_reconnect_attempts: 6
@@ -112,3 +112,7 @@ repmgr_archive_ready_warning: 16
 repmgr_archive_ready_critical: 128
 repmgr_replication_lag_warning: 300
 repmgr_replication_lag_critical: 600
+
+# repmgrd configuration
+repmgrd_service_start_command: systemctl start repmgrd
+repmgrd_service_stop_command: systemctl stop repmgrd
