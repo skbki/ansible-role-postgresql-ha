@@ -10,8 +10,6 @@
       apt: 
         name: 
           - python3-apt
-          - python3-pip
-          - libpq-dev # required for psycog2
         update_cache: yes
     - name: Use python3 by default
       alternatives: 
@@ -25,10 +23,6 @@
         link: /usr/bin/pip
         name: pip
         priority: 1
-    - name: Install pip dependencies
-      pip:
-        name: psycopg2
-        state: present
     - name: Debug variables
       debug:
         msg:
