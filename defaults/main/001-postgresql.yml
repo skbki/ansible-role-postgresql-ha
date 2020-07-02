@@ -39,7 +39,6 @@ postgresql_ext_install_postgis: no
 postgresql_ext_install_repmgr: no
 
 postgresql_ext_postgis_version: "2.5" # be careful: check whether the postgresql/postgis versions work together
-
 postgresql_ext_postgis_deps:
   - libgeos-c1
   - "postgresql-{{ postgresql_version }}-postgis-{{ postgresql_ext_postgis_version }}"
@@ -798,6 +797,6 @@ postgresql_apt_key_url: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
 postgresql_apt_repository: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main {{ postgresql_version }}"
 # Pin-Priority of PGDG repository
 postgresql_apt_pin_priority: 500
-postgresql_apt_py3_dependencies: ["python3-psycopg2", "locales"]
-postgresql_apt_py2_dependencies: ["python-psycopg2", "python-pycurl", "locales"]
-postgresql_apt_dependencies: "{{ postgresql_apt_py3_dependencies if 'python3' in ansible_python_interpreter|default('') else postgresql_apt_py2_dependencies }}"
+postgresql_apt_py3_dependencies: ["libpq-dev", "python3-psycopg2", "locales"]
+postgresql_apt_py2_dependencies: ["libpq-dev", "python-psycopg2", "python-pycurl", "locales"]
+postgresql_apt_dependencies: "{{ postgresql_apt_py3_dependencies if ansible_python_version is version('3', '>=') else postgresql_apt_py2_dependencies }}"

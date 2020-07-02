@@ -10,8 +10,6 @@
       apt: 
         name: 
           - python3-apt
-          - python3-pip
-          - libpq-dev # required for psycog2
         update_cache: yes
     - name: Use python3 by default
       alternatives: 
@@ -19,16 +17,6 @@
         link: /usr/bin/python
         name: python
         priority: 1
-    - name: Use pip3 by default
-      alternatives: 
-        path: /usr/bin/pip3
-        link: /usr/bin/pip
-        name: pip
-        priority: 1
-    - name: Install pip dependencies
-      pip:
-        name: psycopg2
-        state: present
     - name: Debug variables
       debug:
         msg:
@@ -39,17 +27,23 @@
   roles:
     - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-postgresql-ha' }}"
       vars:
+        # Required configuration items
+        repmgr_target_group: pgcluster
+        repmgr_master: pgsql01
+        repmgr_failover: automatic
+        repmgr_promote_command: /usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file
+        repmgr_follow_command: /usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n
+        repmgr_monitoring_history: "yes"
+        repmgr_connection_check_type: query
+        repmgr_log_level: DEBUG
+        repmgr_reconnect_attempts: 2
+        repmgr_reconnect_interval: 10
         # Basic settings
         postgresql_version: 11
         postgresql_cluster_name: main
         postgresql_cluster_reset: false # TODO: Needs to be tested for repmgr
-        postgresql_port: 5432
-        postgresql_encoding: "UTF-8"
-        postgresql_locale: "fr_FR.UTF-8"
-        postgresql_ctype: "fr_FR.UTF-8"
-        postgresql_admin_user: "postgres"
-        postgresql_default_auth_method: "peer"
         postgresql_listen_addresses: "*"
+        postgresql_port: 5432
         postgresql_wal_level: "replica"
         postgresql_max_wal_senders: 10
         postgresql_max_replication_slots: 10
@@ -96,6 +90,7 @@
           - name: admin
             db: testdb
             role_attr_flags: "SUPERUSER"
-        # Required configuration items
-        repmgr_target_group: "pgcluster"
-        repmgr_master: "pgsql01"
+        # required for repmgr node rejoin --force-rewind
+        postgresql_data_checksums: true
+        postgresql_wal_compression: on
+        postgresql_wal_log_hints: on

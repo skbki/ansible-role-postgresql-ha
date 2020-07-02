@@ -66,3 +66,4 @@
     executable: /bin/bash
   become: yes
   become_user: "{{ postgresql_service_user }}"
+  when: postgresql_install.changed

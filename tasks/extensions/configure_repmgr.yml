@@ -6,6 +6,12 @@
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0640
+  notify: reload repmgr
+
+- name: Repmgr | Upload logrotate configuration
+  template:
+    src: repmgr_logroate.j2
+    dest: /etc/logrotate.d/repmgr
 
 - name: Repmgr | Create repmgr.conf symlink for shorter commands # see: https://repmgr.org/docs/4.0/configuration-file.html
   file:
@@ -85,7 +91,7 @@
       "repmgr_primary_hostname": "{{ repmgr_primary_hostname == ansible_hostname }}"
 
 - name: Repmgr | Register as primary
-  command: "repmgr primary register"
+  command: "repmgr primary register -F"
   become: yes
   become_user: "{{ postgresql_service_user }}"
   when: ansible_hostname == repmgr_primary_hostname
@@ -129,15 +135,26 @@
   become_user: "{{ postgresql_service_user }}"
 
 - name: Repmgr | Ensure repmgrd is running
-  service:
-    name: repmgrd
-    state: started
-    enabled: yes
-  when: repmgr_monitoring_history == "true" or repmgr_failover == "automatic"
+  command: "/usr/bin/repmgrd daemon start"
+  when: repmgr_monitoring_history or repmgr_failover == 'automatic'
+  become: yes
+  become_user: "{{ postgresql_service_user }}"
+
+- name: Repmgr | Show repmgrd status
+  command: "repmgr daemon status"
+  register: repmgrd_status
+  when: repmgr_monitoring_history or repmgr_failover == 'automatic'
+  become: yes
+  become_user: "{{ postgresql_service_user }}"
+
+- name: Debug repmgrd status
+  debug:
+    msg:
+      "{{ repmgrd_status.stdout_lines }}"
 
 - name: Repmgr | Setup cluster monitoring history cleanup with cron task
-  copy:
-    content: "repmgr cluster cleanup --keep-history={{ repmgr_keep_history_days }}"
-    dest: "/etc/cron.daily/repmgr_cleanup"
-    mode: 0755
-  when: repmgr_monitoring_history == "true" or repmgr_failover == "automatic"
+  cron:
+    name: Purges repmgr.monitoring_history table
+    job: "repmgr cluster cleanup --keep-history={{ repmgr_keep_history_days }}"
+    special_time: daily
+  when: repmgr_monitoring_history and repmgr_failover == 'automatic'

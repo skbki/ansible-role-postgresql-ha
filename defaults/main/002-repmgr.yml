@@ -34,7 +34,7 @@ repmgr_ssh_key_type: rsa
 # Logging
 repmgr_log_level: INFO
 repmgr_log_facility: STDERR
-repmgr_log_file: ""
+repmgr_log_file: /var/lib/postgresql/repmgrd.log
 repmgr_log_status_interval: 300
 
 # Notification
@@ -71,7 +71,7 @@ repmgr_barman_config: ""
 repmgr_repmgrd_pid_file: ""
 
 # Fail-over
-repmgr_failover: "manual"
+repmgr_failover: manual
 repmgr_priority: 100
 repmgr_connection_check_type: ping # Accepted: ping, connection, query
 repmgr_reconnect_attempts: 6
@@ -83,6 +83,7 @@ repmgr_repmgrd_standby_startup_timeout: 60
 
 # Monitoring
 repmgr_monitoring_history: "no"
+repmgr_keep_history_days: 2 # used by the 'repmgr cluster cleanup' command which is to be executed by a cronjob. See configure_repmgr.yml
 repmgr_monitor_interval_secs: 2
 repmgr_degraded_monitoring_timeout: -1
 repmgr_async_query_timeout: 60
@@ -100,10 +101,10 @@ repmgr_child_nodes_disconnect_timeout: 30
 repmgr_child_nodes_disconnect_command: ''
 
 # Service commands
-repmgr_service_start_command: sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} start
-repmgr_service_stop_command: sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} stop
-repmgr_service_restart_command: sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} restart
-repmgr_service_reload_command: sudo pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} reload
+repmgr_service_start_command: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} start
+repmgr_service_stop_command: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} stop
+repmgr_service_restart_command: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} restart
+repmgr_service_reload_command: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} reload
 repmgr_service_promote_command: /usr/lib/postgresql/{{ postgresql_version }}/bin/pg_ctl -w -D {{ postgresql_data_directory }} promote
 
 # Warning levels
@@ -111,3 +112,7 @@ repmgr_archive_ready_warning: 16
 repmgr_archive_ready_critical: 128
 repmgr_replication_lag_warning: 300
 repmgr_replication_lag_critical: 600
+
+# repmgrd configuration
+repmgrd_service_start_command: systemctl start repmgrd
+repmgrd_service_stop_command: systemctl stop repmgrd

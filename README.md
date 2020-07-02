@@ -20,6 +20,7 @@ Tested with :
   - [Verifying cluster functionality](#verifying-cluster-functionality)
   - [Show cluster status](#show-cluster-status)
   - [List nodes and their attributes](#list-nodes-and-their-attributes)
+- [Register former primary as a standby node after automatic failover](#register-former-primary-as-a-standby-node-after-automatic-failover)
 - [License](#license)
 
 ### Requirements
@@ -43,9 +44,10 @@ ansible-galaxy install fidanf.postgresql-ha
 
 ```ini
 [pgcluster]
-pgsql01     ansible_host=192.168.56.10  repmgr_node_id=1
-pgsql02     ansible_host=192.168.56.11  repmgr_node_id=2
-pgsql03     ansible_host=192.168.56.12  repmgr_node_id=3
+pgsql01     ansible_host=192.168.56.10  repmgr_node_id=1 repmgr_priority=3
+pgsql02     ansible_host=192.168.56.11  repmgr_node_id=2 repmgr_priority=2
+pgsql03     ansible_host=192.168.56.12  repmgr_node_id=3 repmgr_priority=1
+
 ```
 ### Role variables
 
@@ -66,20 +68,22 @@ In order to exactly figure out the purpose and valid values for each of these va
     - name: fidanf.postgresql-ha
       vars:
         # Required configuration items
-        repmgr_target_group: "pgcluster"
-        repmgr_target_group_hosts: "{{ groups[repmgr_target_group] }}"
-        repmgr_master: "pgsql01"
+        repmgr_target_group: pgcluster
+        repmgr_master: pgsql01
+        repmgr_failover: automatic
+        repmgr_promote_command: /usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file
+        repmgr_follow_command: /usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n
+        repmgr_monitoring_history: "yes"
+        repmgr_connection_check_type: query
+        repmgr_log_level: DEBUG
+        repmgr_reconnect_attempts: 2
+        repmgr_reconnect_interval: 10
         # Basic settings
         postgresql_version: 11
         postgresql_cluster_name: main
         postgresql_cluster_reset: false # TODO: Needs to be tested for repmgr
-        postgresql_port: 5432
-        postgresql_encoding: "UTF-8"
-        postgresql_locale: "fr_FR.UTF-8"
-        postgresql_ctype: "fr_FR.UTF-8"
-        postgresql_admin_user: "postgres"
-        postgresql_default_auth_method: "peer"
         postgresql_listen_addresses: "*"
+        postgresql_port: 5432
         postgresql_wal_level: "replica"
         postgresql_max_wal_senders: 10
         postgresql_max_replication_slots: 10
@@ -104,28 +108,28 @@ In order to exactly figure out the purpose and valid values for each of these va
           - { type: "host", database: "{{ repmgr_database }}", user: "{{ repmgr_user }}", address: "192.168.56.0/32", method: "trust" }  
         # Databases
         postgresql_databases:
-          - name: testdb
-            owner: admin
-            encoding: "UTF-8"
           - name: "{{ repmgr_database }}"
             owner: "{{ repmgr_user }}"
             encoding: "UTF-8"
+          - name: testdb
+            owner: admin
+            encoding: "UTF-8"
         # Users
         postgresql_users:
+          - name: "{{ repmgr_user }}"
+            pass: "{{ repmgr_password }}"
           - name: admin
             pass: secret # postgresql >=10 does not accept unencrypted passwords
             encrypted: yes
-          - name: "{{ repmgr_user }}"
-            pass: "{{ repmgr_password }}"
         # Roles
         postgresql_user_privileges:
-          - name: admin
-            db: testdb
-            role_attr_flags: "SUPERUSER"
           - name: "{{ repmgr_user }}"
             db: "{{ repmgr_database }}"
             priv: "ALL"
             role_attr_flags: "SUPERUSER,REPLICATION"
+          - name: admin
+            db: testdb
+            role_attr_flags: "SUPERUSER"
 
 ```
 
@@ -147,6 +151,21 @@ ansible pgcluster -b --become-user postgres -m shell -a "repmgr cluster show"
 
 ```bash
 ansible pgcluster -b --become-user postgres -m shell -a "repmgr node status"
+```
+
+## Register former primary as a standby node after automatic failover
+
+```
+postgres@pgsql01:~$ pg_ctlcluster 11 main stop
+postgres@pgsql01:~$ repmgr standby clone --force -h pgsql02 -U repmgr -d repmgr
+postgres@pgsql01:~$ pg_ctlcluster 11 main start
+postgres@pgsql01:~$ repmgr standby register --force
+```
+
+Or you may use the repmgr node rejoin with [pg_rewind](https://repmgr.org/docs/current/repmgr-node-rejoin.html#REPMGR-NODE-REJOIN-PG-REWIND) 
+
+```bash
+repmgr node rejoin -d repmgr -U repmgr -h pgsql02 --verbose --force-rewind=/usr/lib/postgresql/11/bin/pg_rewind
 ```
 
 ## License

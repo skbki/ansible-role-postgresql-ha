@@ -5,3 +5,9 @@
     executable: /bin/bash
   become: yes
   become_user: "{{ postgresql_service_user }}"
+
+- name: reload repmgr
+  sysvinit:
+    name: repmgrd
+    state: reloaded
+  become: yes
