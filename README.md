@@ -158,8 +158,8 @@ ansible pgcluster -b --become-user postgres -m shell -a "repmgr node status"
 ```
 postgres@pgsql01:~$ pg_ctlcluster 11 main stop
 postgres@pgsql01:~$ repmgr standby clone --force -h pgsql02 -U repmgr -d repmgr
-postgres@pgsql01:~$ repmgr standby register --force
 postgres@pgsql01:~$ pg_ctlcluster 11 main start
+postgres@pgsql01:~$ repmgr standby register --force
 ```
 
 Or you may use the repmgr node rejoin with pg_rewind : https://repmgr.org/docs/current/repmgr-node-rejoin.html#REPMGR-NODE-REJOIN-PG-REWIND 
