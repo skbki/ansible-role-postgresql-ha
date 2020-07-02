@@ -162,7 +162,11 @@ postgres@pgsql01:~$ pg_ctlcluster 11 main start
 postgres@pgsql01:~$ repmgr standby register --force
 ```
 
-Or you may use the repmgr node rejoin with pg_rewind : https://repmgr.org/docs/current/repmgr-node-rejoin.html#REPMGR-NODE-REJOIN-PG-REWIND 
+Or you may use the repmgr node rejoin with [pg_rewind](https://repmgr.org/docs/current/repmgr-node-rejoin.html#REPMGR-NODE-REJOIN-PG-REWIND) 
+
+```bash
+repmgr node rejoin -d repmgr -U repmgr -h pgsql02 --verbose --force-rewind=/usr/lib/postgresql/11/bin/pg_rewind
+```
 
 ## License
 
