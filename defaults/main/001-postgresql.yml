@@ -39,7 +39,6 @@ postgresql_ext_install_postgis: no
 postgresql_ext_install_repmgr: no
 
 postgresql_ext_postgis_version: "2.5" # be careful: check whether the postgresql/postgis versions work together
-
 postgresql_ext_postgis_deps:
   - libgeos-c1
   - "postgresql-{{ postgresql_version }}-postgis-{{ postgresql_ext_postgis_version }}"
@@ -801,7 +800,3 @@ postgresql_apt_pin_priority: 500
 postgresql_apt_py3_dependencies: ["libpq-dev", "python3-psycopg2", "locales"]
 postgresql_apt_py2_dependencies: ["libpq-dev", "python-psycopg2", "python-pycurl", "locales"]
 postgresql_apt_dependencies: "{{ postgresql_apt_py3_dependencies if ansible_python_version is version('3', '>=') else postgresql_apt_py2_dependencies }}"
-
-postgresql_bin_directory: /usr/bin
-postgresql_fdw_mysql_packages: "postgresql-{{ postgresql_version }}-mysql-fdw"
-postgresql_fdw_ogr_packages: "postgresql-{{ postgresql_version }}-ogr-fdw"
