@@ -6,7 +6,6 @@ Install and configure a PostgreSQL high-availability cluster managed with repmgr
 
 Tested with :
   - Debian 10.x :heavy_check_mark:
-  - Ubuntu 20.04.x :heavy_check_mark:
   - Ubuntu 18.04.x :heavy_check_mark:
 
 ---

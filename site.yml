@@ -17,12 +17,6 @@
         link: /usr/bin/python
         name: python
         priority: 1
-    - name: Use pip3 by default
-      alternatives: 
-        path: /usr/bin/pip3
-        link: /usr/bin/pip
-        name: pip
-        priority: 1
     - name: Debug variables
       debug:
         msg:
