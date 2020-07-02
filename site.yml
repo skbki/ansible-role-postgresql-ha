@@ -90,3 +90,7 @@
           - name: admin
             db: testdb
             role_attr_flags: "SUPERUSER"
+        # required for repmgr node rejoin --force-rewind
+        postgresql_data_checksums: true
+        postgresql_wal_compression: on
+        postgresql_wal_log_hints: on
