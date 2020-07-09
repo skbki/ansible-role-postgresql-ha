@@ -4,11 +4,14 @@
   gather_facts: yes
   become: yes
   vars:
+    ansible_python_interpreter: /usr/bin/python3
     role_path: "{{ lookup('env', 'ROLE_PATH') }}"
   pre_tasks:
     - name: Debug variables
       debug:
         msg:
+          "ansible_python_interpreter": "{{ ansible_python_interpreter }}"
+          "ansible_python_version": "{{ ansible_python_version }}"
           "postgresql_version": "{{ postgresql_version }}"
           "repmgr_master": "{{ repmgr_master }}"
           "repmgr_target_group": "{{ repmgr_target_group }}"
