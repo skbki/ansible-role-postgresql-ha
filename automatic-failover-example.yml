@@ -3,9 +3,6 @@
   gather_facts: yes
   become: yes
   debugger: on_failed
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-    role_path: "{{ lookup('env', 'ROLE_PATH') }}"
   pre_tasks:
     - name: Install python dependencies
       apt: 
@@ -27,8 +24,9 @@
           "repmgr_master": "{{ repmgr_master }}"
           "repmgr_target_group": "{{ repmgr_target_group }}"
           "repmgr_node_id": "{{ repmgr_node_id }}"
+          "repmgr_failover": "{{ repmgr_failover }}"
   roles:
-    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-postgresql-ha' }}"
+    - name: ../ansible-role-postgresql-ha
       vars:
         # Required configuration items
         repmgr_target_group: pgcluster
@@ -44,7 +42,7 @@
         # Basic settings
         postgresql_version: 11
         postgresql_cluster_name: main
-        postgresql_cluster_reset: false # TODO: Needs to be tested for repmgr
+        postgresql_cluster_reset: false
         postgresql_listen_addresses: "*"
         postgresql_port: 5432
         postgresql_wal_level: "replica"

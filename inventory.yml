@@ -13,3 +13,6 @@ pgcluster:
       ansible_host: 192.168.56.12
       repmgr_node_id: 3
       repmgr_priority: 1
+all:
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
