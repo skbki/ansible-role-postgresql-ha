@@ -38,10 +38,10 @@
         repmgr_log_level: DEBUG
         # Basic settings
         postgresql_version: 12
-        postgresql_cluster_name: main
-        postgresql_cluster_reset: false
         postgresql_listen_addresses: "*"
         postgresql_port: 5432
+        postgresql_max_connections: 128
+        # WAL
         postgresql_wal_level: "replica"
         postgresql_max_wal_senders: 10
         postgresql_max_replication_slots: 10
@@ -52,6 +52,23 @@
         postgresql_ext_install_repmgr: yes
         postgresql_shared_preload_libraries:
           - repmgr
+        postgresql_checkpoint_completion_target: 0.7
+        postgresql_wal_buffers: 16MB
+        postgresql_min_wal_size: 1GB
+        postgresql_max_wal_size: 4GB
+        # memory
+        postgresql_work_mem: 5242kB
+        postgresql_shared_buffers: 512MB
+        postgresql_maintenance_work_mem: 128MB
+        # query tuning
+        postgresql_effective_cache_size: 1536MB
+        random_page_cost: 1.1
+        # disk
+        effective_io_concurrency: 200
+        postgresql_max_worker_processes: 2
+        postgresql_max_parallel_workers_per_gather: 1
+        postgresql_max_parallel_workers: 2
+        postgresql_max_parallel_maintenance_workers: 1
         # postgresql logging 
         postgresql_log_checkpoints: on
         postgresql_log_connections: on
