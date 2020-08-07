@@ -58,6 +58,7 @@
   service:
     name: "postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
     state: stopped
+    enabled: no
   when: postgresql_install.changed
 
 - name: PostgreSQL | Start postgresql using pg_ctlcluster binary
