@@ -62,9 +62,9 @@
         postgresql_maintenance_work_mem: 128MB
         # query tuning
         postgresql_effective_cache_size: 1536MB
-        random_page_cost: 1.1
+        postgresql_random_page_cost: 1.1
         # disk
-        effective_io_concurrency: 200
+        postgresql_effective_io_concurrency: 200
         postgresql_max_worker_processes: 2
         postgresql_max_parallel_workers_per_gather: 1
         postgresql_max_parallel_workers: 2
