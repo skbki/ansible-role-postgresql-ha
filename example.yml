@@ -35,7 +35,7 @@
         repmgr_follow_command: /usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n
         repmgr_monitoring_history: "yes"
         repmgr_connection_check_type: query
-        repmgr_log_level: DEBUG
+        repmgr_log_level: INFO
         # Basic settings
         postgresql_version: 12
         postgresql_listen_addresses: "*"
