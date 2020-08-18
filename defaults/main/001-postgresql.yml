@@ -32,6 +32,8 @@ postgresql_cluster_reset: false
 
 postgresql_database_owner: "{{ postgresql_admin_user }}"
 
+postgresql_bin_directory: /usr/lib/postgresql/{{ postgresql_version }}/bin
+
 # Extensions
 postgresql_ext_install_contrib: no
 postgresql_ext_install_dev_headers: no
@@ -47,6 +49,8 @@ postgresql_ext_postgis_deps:
 # Foreign Data Wrapper(s)
 postgresql_fdw_mysql: no
 postgresql_fdw_ogr: no
+postgresql_fdw_mysql_packages: "postgresql-{{ postgresql_version }}-mysql-fdw"
+postgresql_fdw_ogr_packages: "postgresql-{{ postgresql_version }}-ogr-fdw"
 
 # List of databases to be created (optional)
 postgresql_databases: []
