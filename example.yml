@@ -3,10 +3,11 @@
   gather_facts: yes
   become: yes
   pre_tasks:
-    - name: Install python dependencies
+    - name: Install dependencies
       apt: 
         name: 
           - python3-apt
+          - vim
         update_cache: yes
     - name: Use python3 by default
       alternatives: 
