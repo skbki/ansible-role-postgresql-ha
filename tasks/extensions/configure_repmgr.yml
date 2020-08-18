@@ -86,6 +86,15 @@
         mode: 0600
   when: check_ssh_keys.changed or repmgr_ssh_force_renewal
 
+- name: Repmgr | Setup SSH config for Barman
+  template:
+    src: repmgr_barman_ssh_config.j2
+    dest: "{{ repmgr_base_key_path }}/config"
+    owner: "{{ postgresql_service_user }}"
+    group: "{{ postgresql_service_group }}"
+    mode: 0600
+  when: repmgr_barman_host and repmgr_barman_server
+
 - name: Determine repmgr primary hostname
   set_fact:
     repmgr_primary_hostname: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] %}{{ host|trim }}{% endfor %}"

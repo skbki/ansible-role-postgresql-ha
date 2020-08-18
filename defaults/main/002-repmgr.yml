@@ -66,8 +66,10 @@ repmgr_standby_reconnect_timeout: 60
 repmgr_node_rejoin_timeout: 60
 
 # Barman
-repmgr_barman_server: ""
 repmgr_barman_host: ""
+repmgr_barman_port: 22
+repmgr_barman_user: barman
+repmgr_barman_server: ""
 repmgr_barman_config: ""
 repmgr_repmgrd_pid_file: ""
 
