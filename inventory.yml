@@ -2,6 +2,9 @@
 all:
   vars:
     ansible_python_interpreter: /usr/bin/python3
+    postgresql_version: 12
+    repmgr_version: "5.1"
+    repmgr_master: pgsql01
 pgcluster:
   hosts:
     pgsql01:
@@ -19,14 +22,12 @@ pgcluster:
   vars:
     # Required configuration items
     repmgr_target_group: pgcluster
-    repmgr_master: pgsql01
     repmgr_promote_command: /usr/bin/repmgr standby promote -f /etc/repmgr.conf --log-to-file
     repmgr_follow_command: /usr/bin/repmgr standby follow -f /etc/repmgr.conf --log-to-file --upstream-node-id=%n
     repmgr_monitoring_history: "yes"
     repmgr_connection_check_type: query
     repmgr_log_level: INFO
     # Basic settings
-    postgresql_version: 12
     postgresql_listen_addresses: "*"
     postgresql_port: 5432
     postgresql_max_connections: 128
