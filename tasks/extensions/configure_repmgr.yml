@@ -13,7 +13,7 @@
     src: repmgr_logroate.j2
     dest: /etc/logrotate.d/repmgr
 
-- name: Repmgr | Create repmgr.conf symlink for shorter commands # see: https://repmgr.org/docs/4.0/configuration-file.html
+- name: Repmgr | Create repmgr.conf symlink for shorter commands # see: https://repmgr.org/docs/5.0/configuration-file.html
   file:
     src: "{{ postgresql_conf_directory }}/repmgr.conf"
     dest: /etc/repmgr.conf 
@@ -52,34 +52,39 @@
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0700
+  register: check_ssh_keys
 
-- name: Rempgr | Generate local SSH keypair (Native module version)
-  openssh_keypair:
-    path: /tmp/id_rsa
-    size: 2048
-    owner: root
-    mode: 0775
-    force: yes
-  delegate_to: 127.0.0.1
+- name: Repmgr | Setup passwordless SSH access
+  block: 
+    - name: Rempgr | Generate local SSH keypair (Native module version)
+      openssh_keypair:
+        path: /tmp/postgres_id_rsa
+        size: "{{ repmgr_ssh_key_bits }}"
+        type: "{{ repmgr_ssh_key_type }}"
+        owner: root
+        mode: 0775
+        force: yes
+      delegate_to: 127.0.0.1
 
-- name: Repmgr | Fetch pubkey content
-  set_fact:
-    pubkey_content: "{{ lookup('file', '/tmp/id_rsa.pub') }}"
-  become: yes
+    - name: Repmgr | Fetch pubkey content
+      set_fact:
+        pubkey_content: "{{ lookup('file', '/tmp/postgres_id_rsa.pub') }}"
+      become: yes
 
-- name: Repmgr | Update authorized_keys on all nodes
-  authorized_key:
-    user: "{{ postgresql_service_user }}"
-    key: "{{ pubkey_content }}"
-    state: present
+    - name: Repmgr | Update authorized_keys on all nodes
+      authorized_key:
+        user: "{{ postgresql_service_user }}"
+        key: "{{ pubkey_content }}"
+        state: present
 
-- name: Repmgr | Upload private key on all nodes
-  copy:
-    src: "/tmp/id_rsa"
-    dest: "{{ repmgr_private_key_path }}"
-    owner: "{{ postgresql_service_user }}"
-    group: "{{ postgresql_service_group }}"
-    mode: 0600
+    - name: Repmgr | Upload private key on all nodes
+      copy:
+        src: /tmp/postgres_id_rsa
+        dest: "{{ repmgr_private_key_path }}"
+        owner: "{{ postgresql_service_user }}"
+        group: "{{ postgresql_service_group }}"
+        mode: 0600
+  when: check_ssh_keys.changed or repmgr_ssh_force_renewal
 
 - name: Determine repmgr primary hostname
   set_fact:

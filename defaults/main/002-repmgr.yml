@@ -30,6 +30,7 @@ repmgr_private_key_path: /var/lib/postgresql/.ssh/id_rsa
 repmgr_public_key_path: /var/lib/postgresql/.ssh/id_rsa.pub
 repmgr_ssh_key_bits: 2048
 repmgr_ssh_key_type: rsa
+repmgr_ssh_force_renewal: false
 
 # Logging
 repmgr_log_level: INFO
