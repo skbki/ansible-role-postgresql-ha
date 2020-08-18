@@ -1,0 +1,3 @@
+---
+- src: https://github.com/fidanf/ansible-role-barman
+  name: fidanf.barman

@@ -1,0 +1,82 @@
+---
+- hosts: pgbackup
+  gather_facts: yes
+  become: yes
+  roles:
+    # - name: fidanf.barman
+    - name: ../ansible-role-barman
+      vars:
+        barman_archiver: "on"
+        barman_compression: gzip
+        barman_server_configuration:
+          - name: "{{ repmgr_master }}"
+            description: PostgreSQL {{ postgresql_version }} + repmgr {{ repmgr_version }}
+            backup_method: rsync
+            host: "{{ repmgr_master }}"
+            backup_user: postgres
+            systemdbname: postgres
+            backup_options: concurrent_backup
+            reuse_backup: link
+            cron_disabled: yes
+  post_tasks:
+    - name: Barman | Create SSH directory
+      file:
+        path: /var/lib/barman/.ssh
+        state: directory
+      become: yes
+      become_user: "{{ barman_user }}"
+
+    - name: Barman | Copy SSH key to the barman server
+      copy:
+        src: /tmp/postgres_id_rsa
+        dest: /var/lib/barman/.ssh/id_rsa
+        owner: "{{ barman_user }}"
+        mode: 0600
+
+    - name: Barman | Fetch pubkey content
+      set_fact:
+        pubkey_content: "{{ lookup('file', '/tmp/postgres_id_rsa.pub') }}"
+      become: yes
+
+    - name: Barman | Update authorized_keys on all nodes
+      authorized_key:
+        user: "{{ barman_user }}"
+        key: "{{ pubkey_content }}"
+        state: present
+
+    - name: Barman | Verify SSH access
+      shell:
+        cmd: ssh -T -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null postgres@{{ item }} ls /tmp > /dev/null
+      loop: "{{ groups.pgcluster }}"
+      become_user: "{{ barman_user }}"
+
+- hosts: pgcluster
+  gather_facts: yes
+  become: yes
+  pre_tasks:
+    - name: Install dependencies
+      apt: 
+        name: 
+          - python3-apt
+          - vim
+        update_cache: yes
+    - name: Debug variables
+      debug:
+        msg:
+          "repmgr_barman_host": "{{ groups['pgbackup'] | first }}"
+          "repmgr_barman_server": "{{ repmgr_master }}"
+          "repmgr_restore_command": "/usr/bin/barman-wal-restore {{ repmgr_barman_server }} {{ repmgr_barman_server }} -a %f %p"
+  roles:
+    - name: ../ansible-role-postgresql-ha
+      vars:
+        repmgr_barman_host: "{{ groups['pgbackup'] | first }}"
+        repmgr_barman_server:  "{{ repmgr_master }}"
+        repmgr_restore_command: /usr/bin/barman-wal-restore {{ repmgr_barman_host }} {{ repmgr_barman_server }} %f %p
+        repmgr_ssh_options: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+        postgresql_archive_mode: "on"
+        postgresql_archive_command: "rsync -a %p barman@{{ repmgr_barman_host }}:/var/lib/barman/{{ repmgr_barman_server }}/incoming/%f"
+  post_tasks:
+    - name: Install barman-cli (using previously added postgresql APT repositories)
+      apt:
+        name: barman-cli
+        state: present
