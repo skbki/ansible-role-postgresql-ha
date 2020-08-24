@@ -12,12 +12,14 @@
   template:
     src: repmgr_logroate.j2
     dest: /etc/logrotate.d/repmgr
+    mode: 0640
 
 - name: Repmgr | Create repmgr.conf symlink for shorter commands # see: https://repmgr.org/docs/5.0/configuration-file.html
   file:
     src: "{{ postgresql_conf_directory }}/repmgr.conf"
     dest: /etc/repmgr.conf 
     state: link
+    mode: 0640
 
 - name: Repmgr | Ensure systemd drop-in directory exists
   file:
@@ -29,6 +31,7 @@
   template:
     src: "repmgr.custom.conf.j2"
     dest: "/etc/systemd/system/repmgr{{ postgresql_version }}.service.d/custom.conf"
+    mode: 0640
 
 - name: Repmgr | Allow passwordless restarts with postgres user
   template:

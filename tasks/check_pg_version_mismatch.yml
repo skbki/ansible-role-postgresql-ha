@@ -1,5 +1,4 @@
 ---
-# Check binary version
 - name: PostgreSQL | Check binary version
   shell:
     cmd: |
@@ -13,7 +12,6 @@
   register: postgresql_binary_version
   check_mode: no
 
-# Check database version
 - name: PostgreSQL | Check database version
   shell:
     cmd: |
@@ -27,7 +25,6 @@
   register: postgresql_database_version
   check_mode: no
 
-# If versions do not match, then restart PostgreSQL
 - name: PostgreSQL | Verify binary and database versions match
   debug:
     msg: "WARNING: Binary ({{ postgresql_binary_version.stdout }}) and Database ({{ postgresql_database_version.stdout }}) version mismatch. Restart required!"
