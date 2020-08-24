@@ -30,6 +30,6 @@
         regexp: '.*{{ item }}$'
         line: "{{ hostvars[item].ansible_eth1.ipv4.address }} {{ item }}"
         state: present
-        mode: preserve
+        mode: 0644
       when: hostvars[item].ansible_eth1.ipv4.address is defined
       loop: "{{ groups[repmgr_target_group] }}"
