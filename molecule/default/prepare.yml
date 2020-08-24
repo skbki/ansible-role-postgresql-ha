@@ -8,7 +8,7 @@
     - name: Wait for SSH
       wait_for_connection:
 
-    - name: Gather facts for first time
+    - name: Gather facts for the first time
       setup:
 
     - name: Install python dependencies
