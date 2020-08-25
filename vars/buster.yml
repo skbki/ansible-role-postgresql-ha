@@ -1,2 +1,3 @@
 ---
 # PostgreSQL vars for Debian Buster (10.x)
+postgresql_systemctl_path: /usr/bin
