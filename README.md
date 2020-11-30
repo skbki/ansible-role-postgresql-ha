@@ -37,7 +37,7 @@ You can take a look at [prepare.yml](molecule/default/prepare.yml) to check out 
 ### Installation
 
 ```bash
-ansible-galaxy install fidanf.postgresql-ha
+ansible-galaxy install fidanf.postgresql_ha
 ```
 
 ### Example Inventory
