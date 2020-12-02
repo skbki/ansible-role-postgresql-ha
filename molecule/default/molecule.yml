@@ -1,6 +1,7 @@
 ---
 dependency:
   name: galaxy
+  enabled: false
 lint: |
   set -e
   yamllint .
