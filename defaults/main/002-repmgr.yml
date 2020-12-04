@@ -6,7 +6,7 @@ repmgr_password: repmgr
 repmgr_database: repmgr
 repmgr_conninfo: "host={{ ansible_hostname }} user={{ repmgr_user }} dbname={{ repmgr_database }} connect_timeout=2"
 repmgr_data_directory: "{{ postgresql_data_directory }}"
-repmgr_version: "5.1"
+repmgr_version: 5.1
 
 # Optional configuration items
 #
@@ -14,6 +14,8 @@ repmgr_version: "5.1"
 # Repositories
 repmgr_gpg_key_url: https://dl.2ndquadrant.com/gpg-key.asc
 repmgr_apt_repository: "deb [arch=amd64] https://dl.2ndquadrant.com/default/release/apt {{ ansible_distribution_release }}-2ndquadrant main"
+# Add the following variable in order to install a specific version from 2nd Quadrant repos using apt. See vars/buster.yml
+# repmgr_version_debian: 
 
 # Replication
 repmgr_primary: false

@@ -10,9 +10,16 @@
     filename: 2ndquadrant-dl-default-release
   when: ansible_pkg_mgr == "apt"
 
+- name: PostgreSQL | Extensions | Use specific version from repo | apt
+  set_fact:
+    repmgr_apt_name: "postgresql-{{ postgresql_version }}-repmgr={{ repmgr_version_debian }}"
+  when: 
+    - ansible_os_family == "Debian"
+    - repmgr_version_debian is defined
+
 - name: PostgreSQL | Extensions | Make sure the postgres repmgr extensions are installed | apt
   apt:
-    name: "postgresql-{{ postgresql_version }}-repmgr"
+    name: "{{ repmgr_apt_name | default ('postgresql-' + postgresql_version|string + '-repmgr' ) }}"
     state: present
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
