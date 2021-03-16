@@ -15,3 +15,4 @@ verbosity: 1
 exclude_paths: 
   - ../.ansible/roles
   - tasks/main.yml
+  - tasks/extensions/configure_repmgr.yml
