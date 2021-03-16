@@ -53,6 +53,13 @@
     enabled: no
   when: postgresql_install.changed
 
+- name: PostgreSQL | Ensure systemd unit is disabled
+  shell:
+    cmd: |
+      systemctl disable "postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
+    executable: /bin/bash
+    warn: no
+
 - name: PostgreSQL | Start postgresql using pg_ctlcluster binary
   shell: 
     cmd: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} restart
