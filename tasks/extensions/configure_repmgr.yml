@@ -55,39 +55,36 @@
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0700
-  register: check_ssh_keys
 
-- name: Repmgr | Setup passwordless SSH access
-  block: 
-    - name: Rempgr | Generate local SSH keypair (Native module version)
-      openssh_keypair:
-        path: /tmp/postgres_id_rsa
-        size: "{{ repmgr_ssh_key_bits }}"
-        type: "{{ repmgr_ssh_key_type }}"
-        owner: root
-        mode: 0775
-        force: yes
-      delegate_to: 127.0.0.1
+- name: Repmgr | Generate an SSH keypair locally
+  community.crypto.openssh_keypair:
+    path: /tmp/postgres_id_rsa
+    size: "{{ repmgr_ssh_key_bits }}"
+    type: "{{ repmgr_ssh_key_type }}"
+    force: "{{ repmgr_ssh_force_renewal }}"
+    regenerate: partial_idempotence
+    mode: 0644
+  delegate_to: 127.0.0.1
+  become: no
 
-    - name: Repmgr | Fetch pubkey content
-      set_fact:
-        pubkey_content: "{{ lookup('file', '/tmp/postgres_id_rsa.pub') }}"
-      become: yes
+- name: Repmgr | Fetch pubkey content
+  set_fact:
+    pubkey_content: "{{ lookup('file', '/tmp/postgres_id_rsa.pub') }}"
+  become: no
 
-    - name: Repmgr | Update authorized_keys on all nodes
-      authorized_key:
-        user: "{{ postgresql_service_user }}"
-        key: "{{ pubkey_content }}"
-        state: present
+- name: Repmgr | Update authorized_keys on all nodes
+  ansible.posix.authorized_key:
+    user: "{{ postgresql_service_user }}"
+    key: "{{ pubkey_content }}"
+    state: present
 
-    - name: Repmgr | Upload private key on all nodes
-      copy:
-        src: /tmp/postgres_id_rsa
-        dest: "{{ repmgr_private_key_path }}"
-        owner: "{{ postgresql_service_user }}"
-        group: "{{ postgresql_service_group }}"
-        mode: 0600
-  when: check_ssh_keys.changed or repmgr_ssh_force_renewal
+- name: Repmgr | Upload private key on all nodes
+  copy:
+    src: /tmp/postgres_id_rsa
+    dest: "{{ repmgr_private_key_path }}"
+    owner: "{{ postgresql_service_user }}"
+    group: "{{ postgresql_service_group }}"
+    mode: 0600
 
 - name: Repmgr | Setup SSH config for Barman
   template:
@@ -137,8 +134,8 @@
 
 - name: Repmgr | Wait for Postgres
   wait_for:
+    port: "{{ postgresql_port }}"
     timeout: 3
-  delegate_to: localhost
 
 - name: Repmgr | Register standby
   command: "repmgr -F -h {{ repmgr_primary_hostname }} -U repmgr -d repmgr standby register"
