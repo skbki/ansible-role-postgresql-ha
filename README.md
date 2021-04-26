@@ -68,7 +68,7 @@ In order to exactly figure out the purpose and valid values for each of these va
   gather_facts: yes
   become: yes
   roles:
-    - name: fidanf.postgresql-ha
+    - name: fidanf.postgresql_ha
       vars:
         # Required configuration items
         repmgr_target_group: pgcluster
