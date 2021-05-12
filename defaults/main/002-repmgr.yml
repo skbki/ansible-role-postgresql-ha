@@ -6,7 +6,7 @@ repmgr_password: repmgr
 repmgr_database: repmgr
 repmgr_conninfo: "host={{ ansible_hostname }} user={{ repmgr_user }} dbname={{ repmgr_database }} connect_timeout=2"
 repmgr_data_directory: "{{ postgresql_data_directory }}"
-repmgr_version: 5.1
+repmgr_version: 5.2
 
 # Optional configuration items
 #
@@ -63,6 +63,7 @@ repmgr_promote_check_timeout: 60
 repmgr_promote_check_interval: 1
 repmgr_primary_follow_timeout: 60
 repmgr_standby_follow_timeout: 15
+repmgr_standby_follow_restart: "false"
 repmgr_shutdown_check_timeout: 60
 repmgr_standby_reconnect_timeout: 60
 repmgr_node_rejoin_timeout: 60
@@ -97,6 +98,7 @@ repmgr_async_query_timeout: 60
 repmgr_standby_disconnect_on_failover: "false"
 repmgr_sibling_nodes_disconnect_timeout: 30
 repmgr_primary_visibility_consensus: "false"
+repmgr_always_promote: "false"
 repmgr_failover_validation_command: ''
 repmgr_election_rerun_interval: 15
 repmgr_child_nodes_check_interval: 5

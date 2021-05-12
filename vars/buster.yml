@@ -1,4 +1,4 @@
 ---
 # PostgreSQL vars for Debian Buster (10.x)
 postgresql_systemctl_path: /usr/bin
-repmgr_version_debian: 5.1.0-2.buster+1
+repmgr_version_debian: 5.2.1-1.buster+1
