@@ -39,13 +39,28 @@ platforms:
         type: static
         ip: 192.168.30.3
         auto_config: true
+scenario:
+  test_sequence:
+    - dependency
+    - lint
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    # - idempotence
+    - side_effect
+    - verify
+    - cleanup
+    - destroy
 provisioner:
   name: ansible
   log: true
   inventory:
     group_vars:
       pgcluster: 
-        postgresql_version: 11
+        postgresql_version: 12
         postgresql_port: 5432
         repmgr_master: pgsql01
         repmgr_target_group: pgcluster
@@ -78,7 +93,7 @@ provisioner:
           - name: "{{ repmgr_user }}"
             pass: "{{ repmgr_password }}"
           - name: admin
-            pass: secret # postgresql >=10 does not accept unencrypted passwords
+            pass: secret
             encrypted: yes
         # Roles
         postgresql_user_privileges:
@@ -99,3 +114,4 @@ provisioner:
       callback_whitelist: "profile_tasks,timer"
       allow_world_readable_tmpfiles: true
       ansible_python_interpreter: /usr/bin/python3
+      pipelining: true
