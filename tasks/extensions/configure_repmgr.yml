@@ -62,7 +62,7 @@
     size: "{{ repmgr_ssh_key_bits }}"
     type: "{{ repmgr_ssh_key_type }}"
     force: "{{ repmgr_ssh_force_renewal }}"
-    regenerate: partial_idempotence
+    regenerate: full_idempotence
     mode: 0644
   delegate_to: 127.0.0.1
   become: no

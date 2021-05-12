@@ -3,7 +3,7 @@ all:
   vars:
     ansible_python_interpreter: /usr/bin/python3
     postgresql_version: 12
-    repmgr_version: "5.1"
+    repmgr_version: 5.2
     repmgr_master: pgsql01
 pgcluster:
   hosts:
