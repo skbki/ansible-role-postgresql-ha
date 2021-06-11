@@ -56,7 +56,7 @@
 - name: PostgreSQL | Ensure systemd unit is disabled
   shell:
     cmd: |
-      systemctl disable "postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"
+      systemctl disable postgresql
     executable: /bin/bash
     warn: no
 
