@@ -816,4 +816,4 @@ postgresql_apt_repository: "deb http://apt.postgresql.org/pub/repos/apt/ {{ ansi
 postgresql_apt_pin_priority: 500
 postgresql_apt_py3_dependencies: ["libpq-dev", "python3-psycopg2", "locales"]
 postgresql_apt_py2_dependencies: ["libpq-dev", "python-psycopg2", "python-pycurl", "locales"]
-postgresql_apt_dependencies: "{{ postgresql_apt_py2_dependencies if 'python' in ansible_python_interpreter|default('') else postgresql_apt_py3_dependencies }}"
+postgresql_apt_dependencies: "{{ postgresql_apt_py3_dependencies if 'python3' in ansible_python_interpreter|default('') else postgresql_apt_py2_dependencies }}"
