@@ -21,6 +21,7 @@ Tested with :
   - [Verifying cluster functionality](#verifying-cluster-functionality)
   - [Show cluster status](#show-cluster-status)
   - [List nodes and their attributes](#list-nodes-and-their-attributes)
+  - [Register (clone) an additionnal standby node](#register-clone-an-additionnal-standby-node)
 - [Register former primary as a standby node after automatic failover](#register-former-primary-as-a-standby-node-after-automatic-failover)
 - [License](#license)
 
@@ -159,6 +160,13 @@ ansible pgcluster -b --become-user postgres -m shell -a "repmgr cluster show"
 
 ```bash
 ansible pgcluster -b --become-user postgres -m shell -a "repmgr node status"
+```
+
+### Register (clone) an additionnal standby node 
+
+```bash
+# Assuming the current primary hostname is pgsql01
+ansible-playbook myplaybook.yml -l 'pgsql04' -e 'repmgr_primary_hostname=pgsql01' -vv 
 ```
 
 ## Register former primary as a standby node after automatic failover
