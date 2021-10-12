@@ -1,7 +1,7 @@
 ---
 roles:
-- src: https://github.com/fidanf/ansible-role-barman
-  name: fidanf.barman
+  - src: https://github.com/fidanf/ansible-role-barman
+    name: fidanf.barman
 
 collections:
   - community.crypto
