@@ -41,8 +41,23 @@ You can take a look at [prepare.yml](molecule/default/prepare.yml) to check out 
 
 ### Installation
 
+Shell
 ```bash
+ansible-galaxy collection install community.crypto
 ansible-galaxy install fidanf.postgresql_ha
+```
+
+Requirements file
+```yaml
+---
+roles:
+- src: https://github.com/fidanf/ansible-role-postgresql-ha
+  name: fidanf.postgresql_ha
+  version: master
+
+collections:
+  - community.crypto
+
 ```
 
 ### Dependencies 
