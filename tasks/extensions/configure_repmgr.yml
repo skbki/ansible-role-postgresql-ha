@@ -59,6 +59,7 @@
 - name: Repmgr | Generate an SSH keypair locally
   community.crypto.openssh_keypair:
     path: /tmp/postgres_id_rsa
+    backend: cryptography
     size: "{{ repmgr_ssh_key_bits }}"
     type: "{{ repmgr_ssh_key_type }}"
     force: "{{ repmgr_ssh_force_renewal }}"
@@ -98,6 +99,7 @@
 - name: Determine repmgr primary hostname
   set_fact:
     repmgr_primary_hostname: "{% for host, vars in hostvars.items() if 'repmgr_primary' in vars and vars['repmgr_primary'] %}{{ host|trim }}{% endfor %}"
+  when: repmgr_primary_hostname is not defined
 
 - name: Debug repmgr primary hostname
   debug:

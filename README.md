@@ -13,6 +13,7 @@ Tested with :
 - [PostgreSQL HA](#postgresql-ha)
   - [Requirements](#requirements)
   - [Installation](#installation)
+  - [Dependencies](#dependencies)
   - [Example Inventory](#example-inventory)
   - [Role variables](#role-variables)
   - [Example Playbook](#example-playbook)
@@ -20,6 +21,7 @@ Tested with :
   - [Verifying cluster functionality](#verifying-cluster-functionality)
   - [Show cluster status](#show-cluster-status)
   - [List nodes and their attributes](#list-nodes-and-their-attributes)
+  - [Register (clone) an additionnal standby node](#register-clone-an-additionnal-standby-node)
 - [Register former primary as a standby node after automatic failover](#register-former-primary-as-a-standby-node-after-automatic-failover)
 - [License](#license)
 
@@ -42,6 +44,10 @@ You can take a look at [prepare.yml](molecule/default/prepare.yml) to check out 
 ```bash
 ansible-galaxy install fidanf.postgresql_ha
 ```
+
+### Dependencies 
+
+- [cryptography](https://pypi.org/project/cryptography/) (ansible host)
 
 ### Example Inventory
 
@@ -82,7 +88,7 @@ In order to exactly figure out the purpose and valid values for each of these va
         repmgr_reconnect_attempts: 2
         repmgr_reconnect_interval: 10
         # Basic settings
-        postgresql_version: 11
+        postgresql_version: 12
         postgresql_cluster_name: main
         postgresql_cluster_reset: false # TODO: Needs to be tested for repmgr
         postgresql_listen_addresses: "*"
@@ -156,19 +162,26 @@ ansible pgcluster -b --become-user postgres -m shell -a "repmgr cluster show"
 ansible pgcluster -b --become-user postgres -m shell -a "repmgr node status"
 ```
 
+### Register (clone) an additionnal standby node 
+
+```bash
+# Assuming the current primary hostname is pgsql01
+ansible-playbook myplaybook.yml -l 'pgsql04' -e 'repmgr_primary_hostname=pgsql01' -vv 
+```
+
 ## Register former primary as a standby node after automatic failover
 
 ```
-postgres@pgsql01:~$ pg_ctlcluster 11 main stop
+postgres@pgsql01:~$ pg_ctlcluster 12 main stop
 postgres@pgsql01:~$ repmgr standby clone --force -h pgsql02 -U repmgr -d repmgr
-postgres@pgsql01:~$ pg_ctlcluster 11 main start
+postgres@pgsql01:~$ pg_ctlcluster 12 main start
 postgres@pgsql01:~$ repmgr standby register --force
 ```
 
 Or you may use the repmgr node rejoin with [pg_rewind](https://repmgr.org/docs/current/repmgr-node-rejoin.html#REPMGR-NODE-REJOIN-PG-REWIND) 
 
 ```bash
-repmgr node rejoin -d repmgr -U repmgr -h pgsql02 --verbose --force-rewind=/usr/lib/postgresql/11/bin/pg_rewind
+repmgr node rejoin -d repmgr -U repmgr -h pgsql02 --verbose --force-rewind=/usr/lib/postgresql/12/bin/pg_rewind
 ```
 
 ## License
