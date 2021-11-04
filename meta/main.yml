@@ -2,7 +2,8 @@
 galaxy_info:
   author: Frank FIDANZA
   company: RG
-  role_name: postgresql-ha
+  namespace: fidanf
+  role_name: postgresql_ha
   description: Install and configure PostgreSQL cluster managed with repmgr. Add dependencies, extensions, databases and users.
   min_ansible_version: 2.10
   license: MIT
