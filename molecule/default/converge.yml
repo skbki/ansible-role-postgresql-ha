@@ -3,9 +3,7 @@
   hosts: pgcluster
   gather_facts: yes
   become: yes
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-    role_path: "{{ lookup('env', 'ROLE_PATH') }}"
+
   pre_tasks:
     - name: Debug variables
       debug:
@@ -17,4 +15,4 @@
           "repmgr_target_group": "{{ repmgr_target_group }}"
           "repmgr_node_id": "{{ repmgr_node_id }}"
   roles:
-    - name: "{{ role_path if role_path is defined and role_path else lookup('env', 'HOME') + '/ansible-role-postgresql-ha' }}"
+    - name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"
