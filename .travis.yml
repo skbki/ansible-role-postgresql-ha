@@ -10,7 +10,7 @@ env:
     - VAGRANT_DEFAULT_PROVIDER: libvirt
     - PY_COLORS: 1
   jobs:
-    - MOLECULE_DISTRO: generic/ubuntu2004
+    - MOLECULE_DISTRO: generic/ubuntu1804
     - MOLECULE_DISTRO: generic/debian10
 
 cache:
@@ -27,8 +27,8 @@ before_install:
     CONFIGURE_ARGS="with-libvirt-include=/usr/share/libvirt with-libvirt-lib=/usr/lib64" sudo vagrant plugin install vagrant-libvirt
   - |
     curl -skL https://bootstrap.pypa.io/get-pip.py | sudo -H python3
-    sudo pip3 install --upgrade --ignore-installed --requirement requirements.txt
-    sudo ansible-galaxy collection install community.crypto
+    sudo -H pip3 install --upgrade --ignore-installed --requirement requirements.txt
+    sudo -H ansible-galaxy collection install community.crypto
 
 script:
   - |

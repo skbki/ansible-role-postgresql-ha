@@ -8,7 +8,6 @@
     - name: Debug variables
       debug:
         msg:
-          "ansible_python_interpreter": "{{ ansible_python_interpreter }}"
           "ansible_python_version": "{{ ansible_python_version }}"
           "postgresql_version": "{{ postgresql_version }}"
           "repmgr_master": "{{ repmgr_master }}"
