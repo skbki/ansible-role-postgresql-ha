@@ -9,7 +9,8 @@
 #
 # Override defaults/main.yml with PostgreSQL version specific values
 #
-- include_vars: "{{ item }}"
+- name: Load PG version specific variables
+  include_vars: "{{ item }}"
   with_first_found:
     - "../vars/postgresql_{{ postgresql_version }}.yml"
     - "../vars/empty.yml"
