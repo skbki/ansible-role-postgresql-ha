@@ -113,5 +113,5 @@ provisioner:
     defaults:
       callback_whitelist: "profile_tasks,timer"
       allow_world_readable_tmpfiles: true
-      ansible_python_interpreter: /usr/bin/python3
+      interpreter_python: /usr/bin/python3
       pipelining: true
