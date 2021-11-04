@@ -10,6 +10,7 @@
         executable: /bin/bash
       become_user: "{{ postgresql_service_user }}"
       register: cluster_crosscheck
+      tags: ['skip_ansible_lint']
 
     - name: Print result
       debug:
