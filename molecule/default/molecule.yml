@@ -1,7 +1,8 @@
 ---
 dependency:
   name: galaxy
-  enabled: false
+  options:
+    requirements-file: ${MOLECULE_PROJECT_DIRECTORY}/molecule/default/collections.yml
 lint: |
   set -e
   yamllint .
