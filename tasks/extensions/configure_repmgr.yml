@@ -59,11 +59,11 @@
 - name: Repmgr | Generate an SSH keypair locally
   community.crypto.openssh_keypair:
     path: /tmp/postgres_id_rsa
-    backend: cryptography
+    backend: "{{ 'auto' if ansible_version.full is version ('4', '>=') else omit }}" # Backward-compatible usage with ansible 2.x
+    regenerate: partial_idempotence
     size: "{{ repmgr_ssh_key_bits }}"
     type: "{{ repmgr_ssh_key_type }}"
     force: "{{ repmgr_ssh_force_renewal }}"
-    regenerate: full_idempotence
     mode: 0644
   delegate_to: 127.0.0.1
   become: no
