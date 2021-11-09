@@ -26,3 +26,6 @@ galaxy_info:
     - postgis
     - debian
     - ubuntu
+
+collections:
+  - community.crypto
