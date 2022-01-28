@@ -112,7 +112,7 @@ provisioner:
         repmgr_node_id: 2
   config_options:
     defaults:
-      callback_whitelist: "profile_tasks,timer"
-      allow_world_readable_tmpfiles: true
+      callbacks_enabled: "profile_tasks,timer"
       interpreter_python: /usr/bin/python3
       pipelining: true
+      local_tmp: /var/tmp

@@ -6,7 +6,7 @@ Install and configure a PostgreSQL high-availability cluster managed with repmgr
 
 Tested with :
   - Debian 10.x :heavy_check_mark:
-  - Ubuntu 18.04.x :heavy_check_mark:
+  - Ubuntu 20.04.x :heavy_check_mark:
 
 ---
 
@@ -27,8 +27,8 @@ Tested with :
 
 ### Requirements
 
-Python >=3.6
-The role is compatible with Ansible >=2.10 but hasn't yet be tested with Ansible 3.x.
+Python >=3.8
+Ansible-core >=2.12
 
 See [./requirements.txt](./requirements.txt) for detailled dependencies used to develop the role.
 
@@ -66,13 +66,8 @@ collections:
 
 ### Example Inventory
 
-```ini
-[pgcluster]
-pgsql01     ansible_host=192.168.56.10  repmgr_node_id=1 repmgr_priority=3
-pgsql02     ansible_host=192.168.56.11  repmgr_node_id=2 repmgr_priority=2
-pgsql03     ansible_host=192.168.56.12  repmgr_node_id=3 repmgr_priority=1
+See [inventory.yml](./inventory.yml) for detailed group and host vars.
 
-```
 ### Role variables
 
 Role default variables are split amongst two files :

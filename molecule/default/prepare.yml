@@ -33,3 +33,7 @@
         mode: 0644
       when: hostvars[item].ansible_eth1.ipv4.address is defined
       loop: "{{ groups[repmgr_target_group] }}"
+
+    - name: Install acl package
+      apt: 
+        name: acl
