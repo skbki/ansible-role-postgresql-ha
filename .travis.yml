@@ -10,7 +10,7 @@ env:
     - VAGRANT_DEFAULT_PROVIDER: libvirt
     - PY_COLORS: 1
   jobs:
-    - MOLECULE_DISTRO: generic/ubuntu1804
+    - MOLECULE_DISTRO: generic/ubuntu2004
     - MOLECULE_DISTRO: generic/debian10
 
 cache:
