@@ -99,7 +99,3 @@ pgcluster:
     postgresql_data_checksums: true
     postgresql_wal_compression: on
     postgresql_wal_log_hints: on
-pgbackup:
-  hosts:
-    barman01:
-      ansible_host: 192.168.56.20
