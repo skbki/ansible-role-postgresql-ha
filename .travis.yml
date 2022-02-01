@@ -11,7 +11,7 @@ env:
     - PY_COLORS: 1
   jobs:
     - MOLECULE_DISTRO: generic/ubuntu2004
-    - MOLECULE_DISTRO: generic/debian10
+    - MOLECULE_DISTRO: generic/debian11
 
 cache:
   directories:
