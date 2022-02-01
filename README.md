@@ -100,7 +100,7 @@ In order to exactly figure out the purpose and valid values for each of these va
         repmgr_reconnect_attempts: 2
         repmgr_reconnect_interval: 10
         # Basic settings
-        postgresql_version: 12
+        postgresql_version: 13
         postgresql_cluster_name: main
         postgresql_cluster_reset: false # TODO: Needs to be tested for repmgr
         postgresql_listen_addresses: "*"
@@ -184,16 +184,16 @@ ansible-playbook myplaybook.yml -l 'pgsql04' -e 'repmgr_primary_hostname=pgsql01
 ## Register former primary as a standby node after automatic failover
 
 ```
-postgres@pgsql01:~$ pg_ctlcluster 12 main stop
+postgres@pgsql01:~$ pg_ctlcluster 13 main stop
 postgres@pgsql01:~$ repmgr standby clone --force -h pgsql02 -U repmgr -d repmgr
-postgres@pgsql01:~$ pg_ctlcluster 12 main start
+postgres@pgsql01:~$ pg_ctlcluster 13 main start
 postgres@pgsql01:~$ repmgr standby register --force
 ```
 
 Or you may use the repmgr node rejoin with [pg_rewind](https://repmgr.org/docs/current/repmgr-node-rejoin.html#REPMGR-NODE-REJOIN-PG-REWIND) 
 
 ```bash
-repmgr node rejoin -d repmgr -U repmgr -h pgsql02 --verbose --force-rewind=/usr/lib/postgresql/12/bin/pg_rewind
+repmgr node rejoin -d repmgr -U repmgr -h pgsql02 --verbose --force-rewind=/usr/lib/postgresql/13/bin/pg_rewind
 ```
 
 ## License
