@@ -63,6 +63,7 @@ provisioner:
       pgcluster: 
         postgresql_version: ${POSTGRESQL_VERSION:-"13"}
         postgresql_port: 5432
+        repmgr_version: ${REPMGR_VERSION:-"5.3"}
         repmgr_master: pgsql01
         repmgr_target_group: pgcluster
         postgresql_service_user: postgres
