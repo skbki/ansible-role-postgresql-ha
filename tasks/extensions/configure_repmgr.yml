@@ -108,13 +108,13 @@
 - name: Debug repmgr primary hostname
   debug:
     msg:
-      "repmgr_primary_hostname": "{{ repmgr_primary_hostname == ansible_hostname }}"
+      "repmgr_primary_hostname": "{{ repmgr_primary_hostname == ansible_nodename }}"
 
 - name: Repmgr | Register as primary
   command: "repmgr primary register -F"
   become: yes
   become_user: "{{ postgresql_service_user }}"
-  when: ansible_hostname == repmgr_primary_hostname
+  when: ansible_nodename == repmgr_primary_hostname
 
 - name: Repmgr | Ensure postgresql slave is stopped before clone
   shell: 
@@ -122,13 +122,13 @@
     executable: /bin/bash
   become: yes
   become_user: "{{ postgresql_service_user }}"
-  when: ansible_hostname != repmgr_primary_hostname
+  when: ansible_nodename != repmgr_primary_hostname
 
 - name: Repmgr | Clone standby
   command: "repmgr -F -h {{ repmgr_primary_hostname }} -U repmgr -d repmgr standby clone"
   become: yes
   become_user: "{{ postgresql_service_user }}"
-  when: ansible_hostname != repmgr_primary_hostname
+  when: ansible_nodename != repmgr_primary_hostname
 
 - name: Repmgr | Ensure postgresql slave is running after clone
   shell: 
@@ -136,7 +136,7 @@
     executable: /bin/bash
   become: yes
   become_user: "{{ postgresql_service_user }}"
-  when: ansible_hostname != repmgr_primary_hostname
+  when: ansible_nodename != repmgr_primary_hostname
 
 - name: Repmgr | Wait for Postgres
   wait_for:
@@ -147,7 +147,7 @@
   command: "repmgr -F -h {{ repmgr_primary_hostname }} -U repmgr -d repmgr standby register"
   become: yes
   become_user: "{{ postgresql_service_user }}"
-  when: ansible_hostname != repmgr_primary_hostname
+  when: ansible_nodename != repmgr_primary_hostname
 
 - name: Repmgr | Verify cluster functionality
   command: "repmgr -F -h {{ repmgr_primary_hostname }} -U repmgr -d repmgr cluster crosscheck"
