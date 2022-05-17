@@ -75,6 +75,13 @@
   with_items: "{{ postgresql_databases }}"
   when: item.plpgsql is defined and item.plpgsql
 
+- name: PostgreSQL | Add timescaledb to the database with the requirement
+  become: yes
+  become_user: "{{ postgresql_service_user }}"
+  shell: "{{ postgresql_bin_directory }}/psql {{ item.name }} --port={{ postgresql_port | int }} --username {{ postgresql_admin_user }} -c 'CREATE EXTENSION IF NOT EXISTS timescaledb;'"
+  with_items: "{{ postgresql_databases }}"
+  when: item.timescaledb is defined and item.timescaledb
+
 - name: PostgreSQL | add earthdistance to the database with the requirement
   become: yes
   become_user: "{{ postgresql_service_user }}"
