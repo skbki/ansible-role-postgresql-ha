@@ -111,7 +111,9 @@
       "repmgr_primary_hostname": "{{ repmgr_primary_hostname == ansible_nodename }}"
 
 - name: Repmgr | Register as primary
-  command: "repmgr primary register -F"
+  shell:
+    cmd: "repmgr primary register -F"
+    executable: /bin/bash
   become: yes
   become_user: "{{ postgresql_service_user }}"
   when: ansible_nodename == repmgr_primary_hostname
