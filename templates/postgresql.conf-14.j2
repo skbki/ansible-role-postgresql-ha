@@ -31,7 +31,6 @@
 #                TB = terabytes                     h   = hours
 #                                                   d   = days
 
-
 #------------------------------------------------------------------------------
 # FILE LOCATIONS
 #------------------------------------------------------------------------------
@@ -779,3 +778,7 @@ include_dir = '{{ postgresql_include_dir }}'                    # include files 
 #------------------------------------------------------------------------------
 
 # Add settings for extensions here
+
+{% if postgresql_ext_install_pg_stat_statements is defined and postgresql_ext_install_pg_stat_statements is true%}
+pg_stat_statements.track = all
+{% endif %}

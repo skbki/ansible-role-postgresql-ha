@@ -34,6 +34,12 @@
     - extensions
   register: result
 
+- name: PostgreSQL | add pg_stat_statements to the database with the requirement
+  become: yes
+  become_user: "{{ postgresql_service_user }}"
+  shell: "{{ postgresql_bin_directory }}/psql postgres --port={{ postgresql_port | int }} --username {{ postgresql_admin_user }} -c 'create extension if not exists pg_stat_statements;'"
+  when: postgresql_ext_install_pg_stat_statements is defined and postgresql_ext_install_pg_stat_statements and ansible_nodename == repmgr_master
+
 - name: PostgreSQL | Add hstore to the databases with the requirement
   become: yes
   become_user: "{{ postgresql_service_user }}"
