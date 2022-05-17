@@ -90,7 +90,7 @@ postgresql_pg_hba_custom: []
 postgresql_pg_ident:
   - comment: "root is allowed to login as {{ postgresql_admin_user }}"
     mapname: "root_as_{{ postgresql_admin_user }}"
-    system_username: "{{ postgresql_admin_user }}"
+    system_username: "root"
     pg_username: "{{ postgresql_admin_user }}"
 
 # postgresql.conf
