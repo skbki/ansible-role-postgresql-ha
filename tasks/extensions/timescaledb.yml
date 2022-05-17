@@ -1,0 +1,21 @@
+- name: PostgreSQL | Extensions | Add TimescaleDB repository apt-key | apt
+  apt_key:
+    id: "{{ timescaledb_apt_key_id }}"
+    url: "{{ timescaledb_apt_key_url }}"
+    state: present
+  when: timescaledb_apt_key_url and timescaledb_apt_key_id
+
+- name: PostgreSQL | Extensions | Add TimescaleDB repository | apt
+  apt_repository:
+    repo: "{{ timescaledb_apt_repository }}"
+    state: present
+  when: timescaledb_apt_repository | default('') != ''
+
+- name: PostgreSQL | Extensions | Install TimescaleDB | apt
+  apt:
+    name:
+      - "timescaledb-{{ timescaledb_version }}-postgresql-{{ postgresql_version }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  register: timescaledb_install
