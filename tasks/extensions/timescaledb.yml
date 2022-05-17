@@ -14,7 +14,7 @@
 - name: PostgreSQL | Extensions | Install TimescaleDB | apt
   apt:
     name:
-      - "timescaledb-{{ timescaledb_version }}-postgresql-{{ postgresql_version }}"
+      - "timescaledb-2-postgresql-{{ postgresql_version }}={{ timescaledb_version }}*"
     state: present
     update_cache: yes
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
