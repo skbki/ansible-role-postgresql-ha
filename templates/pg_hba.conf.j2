@@ -17,14 +17,6 @@
 #
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
 
-# Default:
-{% for connection in postgresql_pg_hba_default %}
-{% if connection.comment is defined %}
-# {{connection.comment}}
-{% endif %}
-{{connection.type}}  {{connection.database}}  {{connection.user}}  {{connection.address}}  {{connection.method}}
-{% endfor %}
-
 # MD5 hashed password hosts
 {% for host in postgresql_pg_hba_md5_hosts %}
 host  all  all  {{host}}  md5
@@ -42,6 +34,14 @@ host  all  all  {{host}}  trust
 
 # User custom
 {% for connection in postgresql_pg_hba_custom %}
+{% if connection.comment is defined %}
+# {{connection.comment}}
+{% endif %}
+{{connection.type}}  {{connection.database}}  {{connection.user}}  {{connection.address}}  {{connection.method}}
+{% endfor %}
+
+# Default:
+{% for connection in postgresql_pg_hba_default %}
 {% if connection.comment is defined %}
 # {{connection.comment}}
 {% endif %}
