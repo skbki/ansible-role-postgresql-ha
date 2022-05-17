@@ -39,6 +39,9 @@
   become_user: "{{ postgresql_service_user }}"
   shell: "{{ postgresql_bin_directory }}/psql postgres --port={{ postgresql_port | int }} --username {{ postgresql_admin_user }} -c 'create extension if not exists pg_stat_statements;'"
   when: postgresql_ext_install_pg_stat_statements is defined and postgresql_ext_install_pg_stat_statements and ansible_nodename == repmgr_master
+  register: pg_stat_statements_ext_result
+  failed_when: pg_stat_statements_ext_result.rc != 0 and ("already exists, skipping" not in pg_stat_statements_ext_result.stderr)
+  changed_when: pg_stat_statements_ext_result.rc == 0 and ("already exists, skipping" not in pg_stat_statements_ext_result.stderr)
 
 - name: PostgreSQL | Add hstore to the databases with the requirement
   become: yes
