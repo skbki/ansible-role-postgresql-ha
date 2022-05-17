@@ -90,6 +90,9 @@
   shell: "{{ postgresql_bin_directory }}/psql {{ item.name }} --port={{ postgresql_port | int }} --username {{ postgresql_admin_user }} -c 'CREATE EXTENSION IF NOT EXISTS timescaledb;'"
   with_items: "{{ postgresql_databases }}"
   when: item.timescaledb is defined and item.timescaledb and ansible_nodename == repmgr_master
+  register: timescaledb_ext_result
+  failed_when: timescaledb_ext_result.rc != 0 and ("already exists, skipping" not in timescaledb_ext_result.stderr)
+  changed_when: timescaledb_ext_result.rc == 0 and ("already exists, skipping" not in timescaledb_ext_result.stderr)
 
 - name: PostgreSQL | add earthdistance to the database with the requirement
   become: yes
