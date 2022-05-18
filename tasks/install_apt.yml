@@ -46,6 +46,12 @@
   register: postgresql_install
   environment: "{{ postgresql_env }}"
 
+- name: PostgreSQL | Allow passwordless restarts with postgres user
+  template:
+    src: "sudoers.postgresql.j2"
+    dest: "/etc/sudoers.d/postgresql"
+    mode: 0640
+
 - name: PostgreSQL | Shutdown systemd-based instance upon first installation
   service:
     name: "postgresql@{{ postgresql_version }}-{{ postgresql_cluster_name }}"

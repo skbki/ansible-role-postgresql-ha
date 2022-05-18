@@ -33,12 +33,6 @@
     dest: "/etc/systemd/system/repmgr{{ postgresql_version }}.service.d/custom.conf"
     mode: 0640
 
-- name: Repmgr | Allow passwordless restarts with postgres user
-  template:
-    src: "sudoers.postgresql.j2"
-    dest: "/etc/sudoers.d/postgresql"
-    mode: 0640
-
 - name: Repmgr | Update .pgpass for postgres user
   template:
     src: "pgpass.j2"
