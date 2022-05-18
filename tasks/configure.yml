@@ -42,14 +42,15 @@
   shell: 
     cmd: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} stop
     executable: /bin/bash
-  become_user: "{{ postgresql_service_user }}"
+  become_user: "root"
+  become: yes
   when: ansible_os_family == "Debian" and postgresql_cluster_reset
   ignore_errors: yes
 
 - name: PostgreSQL | Reset the cluster - drop the existing one | Debian
   shell: pg_dropcluster {{ postgresql_version }} {{ postgresql_cluster_name }}
   become: yes
-  become_user: "{{ postgresql_service_user }}"
+  become_user: "root"
   when: ansible_os_family == "Debian" and postgresql_cluster_reset
   ignore_errors: yes
 
@@ -64,14 +65,14 @@
     {% if postgresql_wal_directory != "" and postgresql_version is version_compare('10', '<') %}--xlogdir={{ postgresql_wal_directory }} {% endif %}
     {% if postgresql_wal_directory != "" and postgresql_version is version_compare('10', '>=') %}--waldir={{ postgresql_wal_directory }} {% endif %}
   become: yes
-  become_user: "{{ postgresql_service_user }}"
+  become_user: "root"
   when: ansible_os_family == "Debian" and postgresql_cluster_reset
 
 - name: PostgreSQL | Start PostgreSQL | Debian
   shell: 
     cmd: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} start
     executable: /bin/bash
-  become_user: "{{ postgresql_service_user }}"
+  become_user: "root"
   when: ansible_os_family == "Debian" and postgresql_cluster_reset
 
 - name: PostgreSQL | Verify postgresql cluster version
@@ -134,7 +135,7 @@
     cmd: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} start
     executable: /bin/bash
   become: yes
-  become_user: "{{ postgresql_service_user }}"
+  become_user: "root"
   when: postgresql_configuration_pt1 is defined and postgresql_configuration_pt1.changed or postgresql_configuration_pt2 is defined and postgresql_configuration_pt2.changed or postgresql_configuration_pt3 is defined and postgresql_configuration_pt3.changed or postgresql_systemd_custom_conf is defined
   register: postgresql_start
   failed_when: postgresql_start.rc not in [0, 2] # handle already-running return codes
@@ -144,7 +145,7 @@
     cmd: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} reload
     executable: /bin/bash
   become: yes
-  become_user: "{{ postgresql_service_user }}"
+  become_user: "root"
   when: postgresql_configuration_pt1 is defined and postgresql_configuration_pt1.changed or postgresql_configuration_pt2 is defined and postgresql_configuration_pt2.changed or postgresql_configuration_pt3 is defined and postgresql_configuration_pt3.changed or postgresql_systemd_custom_conf is defined
 
 - name: PostgreSQL | Restart service
@@ -152,7 +153,7 @@
     cmd: pg_ctlcluster {{ postgresql_version }} {{ postgresql_cluster_name }} restart
     executable: /bin/bash
   become: yes
-  become_user: "{{ postgresql_service_user }}"
+  become_user: "root"
   when: postgresql_configuration_pt2 is defined and postgresql_configuration_pt2.changed
   register: postgresql_restart
   failed_when: postgresql_restart.rc not in [0, 2] # handle already-running return codes
