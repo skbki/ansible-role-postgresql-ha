@@ -5,6 +5,7 @@
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     state: directory
+    recurse: yes
     mode: 0700
   register: pgdata_dir_exist
 
@@ -14,6 +15,7 @@
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     state: directory
+    recurse: yes
     mode: 0700
   register: pgwal_dir_exist
   when: postgresql_wal_directory != ""
@@ -24,6 +26,7 @@
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     state: directory
+    recurse: yes
     mode: 0700
   register: pglog_dir_exist
   when: postgresql_log_directory != "pg_log"
