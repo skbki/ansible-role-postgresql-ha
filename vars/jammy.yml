@@ -1,0 +1,3 @@
+---
+# PostgreSQL vars for Ubuntu Jammy (22.04LTS)
+postgresql_systemctl_path: /bin
