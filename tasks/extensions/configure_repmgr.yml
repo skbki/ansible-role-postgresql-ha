@@ -17,6 +17,7 @@
 - name: Repmgr | Ensure logfile is owned by {{ postgresql_service_user }}
   file: 
     path: "{{ repmgr_log_file }}"
+    state: file
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
 
