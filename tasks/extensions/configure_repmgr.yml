@@ -46,6 +46,7 @@
   file: 
     path: "{{ repmgr_base_key_path }}"
     state: directory
+    recurse: yes
     owner: "{{ postgresql_service_user }}"
     group: "{{ postgresql_service_group }}"
     mode: 0700
