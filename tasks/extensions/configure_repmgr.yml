@@ -14,6 +14,12 @@
     dest: /etc/logrotate.d/repmgr
     mode: 0640
 
+- name: Repmgr | Ensure logfile is owned by {{ postgresql_service_user }}
+  file: 
+    path: "{{ repmgr_log_file }}"
+    owner: "{{ postgresql_service_user }}"
+    group: "{{ postgresql_service_group }}"
+
 - name: Repmgr | Create repmgr.conf symlink for shorter commands # see: https://repmgr.org/docs/5.0/configuration-file.html
   file:
     src: "{{ postgresql_conf_directory }}/repmgr.conf"
