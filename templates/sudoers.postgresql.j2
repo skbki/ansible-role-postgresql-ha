@@ -3,5 +3,4 @@ Defaults:{{ postgresql_admin_user }} !requiretty
 {{ postgresql_admin_user }} ALL = NOPASSWD: /usr/bin/pg_ctlcluster *, \
   /usr/lib/postgresql/{{ postgresql_version }}/bin/pg_ctl, \
   {{ postgresql_systemctl_path }}/systemctl start repmgrd, \
-  {{ postgresql_systemctl_path }}/systemctl stop repmgrd, \
-  /usr/bin/pg_dropcluster *
+  {{ postgresql_systemctl_path }}/systemctl stop repmgrd
