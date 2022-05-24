@@ -52,7 +52,6 @@ postgresql_ext_postgis_deps:
 timescaledb_apt_key_id: "47F24417"
 timescaledb_apt_key_url: "https://packagecloud.io/timescale/timescaledb/gpgkey"
 timescaledb_apt_repository: "deb https://packagecloud.io/timescale/timescaledb/ubuntu/ {{ ansible_distribution_release }} main"
-timescaledb_version: "2.6.1"
 
 # Foreign Data Wrapper(s)
 postgresql_fdw_mysql: no
